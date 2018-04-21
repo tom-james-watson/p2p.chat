@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "eslint-config-tomjwatson",
+    "plugin:react/recommended"
+  ]
+}

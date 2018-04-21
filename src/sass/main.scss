@@ -1,0 +1,13 @@
+/** postcss-bem-linter: define main-component; weak */
+$color: #555;
+
+.main-component {
+  &__title {
+    color: $color;
+  }
+}
+
+/** postcss-bem-linter: define utilities */
+.u-ellipsis {
+  color: $color;
+}
