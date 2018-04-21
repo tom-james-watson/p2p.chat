@@ -1,60 +1,99 @@
 import React from 'react'
+import swarm from 'webrtc-swarm'
+import signalhub from 'signalhub'
+import getVideoStream from '../lib/media'
 
-var getMedia = require('getusermedia')
-var recorder = require('media-recorder-stream')
-var swarm = require('webrtc-swarm')
-var signalhub = require('signalhub')
+const SWARM_NAME = 'p2p.chat'
+const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
 export default class Home extends React.Component {
-  render() {
-    return <h1>Hello, World</h1>
-  }
-}
 
-const opts = {
-  video: {
-    mandatory: {
-      maxWidth: 320,
-      maxHeight: 240,
-      maxAspectRatio:4/3,
-      maxFrameRate:10
+  constructor() {
+    super()
+
+    this.state = {
+      initialized: false,
+      peerStreams: {},
     }
-  },
-  audio: true
-}
+  }
 
-getMedia(opts, function (err, media) {
-  if (err) throw err
+  async componentDidMount() {
+    this.init()
+  }
 
-  const video = document.createElement('video')
-  video.src = URL.createObjectURL(media)
-  video.autoplay = true
-  document.body.appendChild(video)
+  async init() {
 
-  var hub = signalhub('swarm-example', ['https://tomjwatson-signalhub.herokuapp.com'])
-  var sw = swarm(hub)
+    const videoStream = await getVideoStream()
 
-  sw.on('peer', function (peer, id) {
-    console.log('connected to a new peer:', {id, peer})
-    console.log('total peers:', sw.peers.length)
-    peer.on('stream', function(stream) {
-      console.log('received stream', stream)
-      var video = document.createElement('video')
-      video.src = window.URL.createObjectURL(stream)
-      document.body.appendChild(video)
-      video.play()
+    const hub = signalhub(SWARM_NAME, [SIGNALHUB])
+    const sw = swarm(hub)
+
+    sw.on('peer', this.handleConnect.bind(this))
+
+    sw.on('disconnect', this.handleDisconnect.bind(this))
+
+    this.setState({
+      initialized: true,
+      videoStream,
+      sw
     })
-    peer.on('data', function(data) {
-      console.log('received data', JSON.parse(data.toString()))
-      console.log('adding stream')
-      peer.addStream(media)
-    })
-    peer.send(JSON.stringify({test: 'hi'}))
-  })
 
-  sw.on('disconnect', function (peer, id) {
+  }
+
+  handleConnect(peer, id) {
+
+    console.log('connected to a new peer:', {id})
+
+    peer.on('stream', (stream) => {
+      const peerStreams = Object.assign({}, this.state.peerStreams)
+      console.log('received stream', {id, stream})
+      peerStreams[id] = stream
+      this.setState({peerStreams})
+    })
+
+    // peer.on('data', (data) => {
+    //   console.log('received data', JSON.parse(data.toString()))
+    //   console.log('adding stream')
+    //   peer.addStream(this.state.videoStream)
+    // })
+    // peer.send(JSON.stringify({test: 'hi'}))
+
+    peer.addStream(this.state.videoStream)
+
+  }
+
+  handleDisconnect(peer, id) {
+
     console.log('disconnected from a peer:', id)
-    console.log('total peers:', sw.peers.length)
-  })
 
-})
+    const peerStreams = Object.assign({}, this.state.peerStreams)
+    delete peerStreams[id]
+    this.setState({peerStreams})
+
+  }
+
+  render() {
+
+    const {initialized, videoStream, peerStreams} = this.state
+
+    if (!initialized) {
+      return <h1>Initializing...</h1>
+    }
+
+    return (
+      <div>
+        <video src={URL.createObjectURL(videoStream)} autoPlay />
+        <hr />
+        {
+          Object.keys(peerStreams).map((id) => {
+            return (
+              <video key={id} src={URL.createObjectURL(peerStreams[id])} autoPlay />
+            )
+          })
+        }
+      </div>
+    )
+
+  }
+
+}
