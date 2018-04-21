@@ -3,7 +3,7 @@ import swarm from 'webrtc-swarm'
 import signalhub from 'signalhub'
 import getVideoStream from '../lib/media'
 
-const SWARM_NAME = 'p2p.chat'
+const SWARM_NAME = 'p2p.chat-two'
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
 export default class Home extends React.Component {
@@ -23,7 +23,7 @@ export default class Home extends React.Component {
 
   async init() {
 
-    const videoStream = await getVideoStream()
+    const myStream = await getVideoStream()
 
     const hub = signalhub(SWARM_NAME, [SIGNALHUB])
     const sw = swarm(hub)
@@ -34,7 +34,7 @@ export default class Home extends React.Component {
 
     this.setState({
       initialized: true,
-      videoStream,
+      myStream,
       sw
     })
 
@@ -54,11 +54,11 @@ export default class Home extends React.Component {
     // peer.on('data', (data) => {
     //   console.log('received data', JSON.parse(data.toString()))
     //   console.log('adding stream')
-    //   peer.addStream(this.state.videoStream)
+    //   peer.addStream(this.state.myStream)
     // })
     // peer.send(JSON.stringify({test: 'hi'}))
 
-    peer.addStream(this.state.videoStream)
+    peer.addStream(this.state.myStream)
 
   }
 
@@ -74,7 +74,7 @@ export default class Home extends React.Component {
 
   render() {
 
-    const {initialized, videoStream, peerStreams} = this.state
+    const {initialized, myStream, peerStreams} = this.state
 
     if (!initialized) {
       return <h1>Initializing...</h1>
@@ -82,7 +82,7 @@ export default class Home extends React.Component {
 
     return (
       <div>
-        <video src={URL.createObjectURL(videoStream)} autoPlay />
+        <video src={URL.createObjectURL(myStream)} autoPlay muted />
         <hr />
         {
           Object.keys(peerStreams).map((id) => {
