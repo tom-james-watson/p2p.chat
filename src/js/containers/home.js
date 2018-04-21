@@ -1,95 +1,54 @@
 import React from 'react'
-import swarm from 'webrtc-swarm'
-import signalhub from 'signalhub'
 import getVideoStream from '../lib/media'
-
-const SWARM_NAME = 'p2p.chat-two'
-const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
+import MyStream from '../components/my-stream'
+import RoomChooser from '../components/room-chooser'
+import Chat from './chat'
 
 export default class Home extends React.Component {
 
-  constructor() {
-    super()
-
-    this.state = {
-      initialized: false,
-      peerStreams: {},
-    }
+  constructor(props) {
+    super(props)
+    this.state = {}
   }
+
 
   async componentDidMount() {
-    this.init()
-  }
-
-  async init() {
 
     const myStream = await getVideoStream()
 
-    const hub = signalhub(SWARM_NAME, [SIGNALHUB])
-    const sw = swarm(hub)
+    this.setState({
+      myStream,
+    })
 
-    sw.on('peer', this.handleConnect.bind(this))
+  }
 
-    sw.on('disconnect', this.handleDisconnect.bind(this))
+  handleChooseRoom(room) {
+
+    console.log('home handleChooseRoom', {room})
 
     this.setState({
-      initialized: true,
-      myStream,
-      sw
+      room,
     })
-
-  }
-
-  handleConnect(peer, id) {
-
-    console.log('connected to a new peer:', {id})
-
-    peer.on('stream', (stream) => {
-      const peerStreams = Object.assign({}, this.state.peerStreams)
-      console.log('received stream', {id, stream})
-      peerStreams[id] = stream
-      this.setState({peerStreams})
-    })
-
-    // peer.on('data', (data) => {
-    //   console.log('received data', JSON.parse(data.toString()))
-    //   console.log('adding stream')
-    //   peer.addStream(this.state.myStream)
-    // })
-    // peer.send(JSON.stringify({test: 'hi'}))
-
-    peer.addStream(this.state.myStream)
-
-  }
-
-  handleDisconnect(peer, id) {
-
-    console.log('disconnected from a peer:', id)
-
-    const peerStreams = Object.assign({}, this.state.peerStreams)
-    delete peerStreams[id]
-    this.setState({peerStreams})
 
   }
 
   render() {
 
-    const {initialized, myStream, peerStreams} = this.state
+    const {myStream, room} = this.state
 
-    if (!initialized) {
+    if (!myStream) {
       return <h1>Initializing...</h1>
     }
 
     return (
       <div>
-        <video src={URL.createObjectURL(myStream)} autoPlay muted />
-        <hr />
+        <MyStream stream={myStream} />
         {
-          Object.keys(peerStreams).map((id) => {
-            return (
-              <video key={id} src={URL.createObjectURL(peerStreams[id])} autoPlay />
-            )
-          })
+          room ? (
+            <Chat myStream={myStream} room={room} />
+          ) : (
+            <RoomChooser onChooseRoom={this.handleChooseRoom.bind(this)} />
+          )
         }
       </div>
     )

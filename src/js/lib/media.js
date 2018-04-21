@@ -7,9 +7,9 @@ export default async function getVideoStream() {
     const opts = {
       video: {
         mandatory: {
-          maxWidth: 120,
-          maxHeight: 120,
-          maxAspectRatio: 1,
+          maxWidth: 400,
+          maxHeight: 300,
+          maxAspectRatio: 4/3,
           maxFrameRate:10
         }
       },
