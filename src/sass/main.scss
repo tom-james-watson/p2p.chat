@@ -1,11 +1,9 @@
 @import './lib/normalize.css';
 @import './lib/skeleton.css';
+@import './vars';
 @import './components/hero';
 @import './components/room-chooser';
-
-$backgroundColor: #292b2c;
-$fontColor: #fff;
-$secondaryFontColor: #292b2c;
+@import './components/chat';
 
 *,
 ::before,
@@ -23,4 +21,14 @@ body {
 
 input {
   color: $secondaryFontColor;
+}
+
+html,
+body,
+#app,
+#home,
+#chat,
+#peer-streams {
+  height: 100%;
+  width: 100%;
 }

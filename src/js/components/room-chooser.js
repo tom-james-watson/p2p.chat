@@ -36,7 +36,7 @@ export default class RoomChoose extends React.Component {
 
     const sid = (+new Date).toString(36).slice(-5)
     const slug = this.slugify(room)
-    const uniqueRoom = `${sid}-${slug}`
+    const uniqueRoom = `${sid}/${slug}`
 
     onChooseRoom(uniqueRoom)
 

@@ -47,10 +47,12 @@
   ],
   "dependencies": {
     "babel-polyfill": "^6.26.0",
+    "classnames": "^2.2.5",
     "eslint-config-tomjwatson": "^0.1.0",
     "getusermedia": "^2.0.1",
     "media-recorder-stream": "^2.1.1",
     "query-string": "^6.0.0",
+    "react-feather": "^1.1.0",
     "signalhub": "^4.9.0",
     "webrtc-swarm": "github:tom-james-watson/webrtc-swarm"
   }

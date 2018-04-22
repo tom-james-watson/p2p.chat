@@ -35,7 +35,7 @@ export default class Home extends React.Component {
     }
 
     return (
-      <div>
+      <div id='home'>
         <Hero />
         <RoomChooser onChooseRoom={this.handleChooseRoom.bind(this)} />
       </div>

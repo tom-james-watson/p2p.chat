@@ -3,8 +3,8 @@ import swarm from 'webrtc-swarm'
 import signalhub from 'signalhub'
 import getVideoStream from '../lib/media'
 import MyStream from '../components/my-stream'
+import PeerStreams from '../components/peer-streams'
 
-const SWARM_NAME = 'p2p.chat-two'
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
 export default class Home extends React.Component {
@@ -14,6 +14,9 @@ export default class Home extends React.Component {
 
     this.state = {
       peerStreams: {},
+      roomTitle: props.room.split('/')[1],
+      audioOn: true,
+      videoOn: true,
     }
   }
 
@@ -66,25 +69,52 @@ export default class Home extends React.Component {
 
   }
 
+  handleVideoToggle() {
+
+    const {myStream, videoOn} = this.state
+
+    myStream.getVideoTracks()[0].enabled = !videoOn
+
+    this.setState({
+      videoOn: !videoOn
+    })
+
+  }
+
+  handleAudioToggle() {
+
+    const {myStream, audioOn} = this.state
+
+    myStream.getAudioTracks()[0].enabled = !audioOn
+
+    this.setState({
+      audioOn: !audioOn
+    })
+
+  }
+
   render() {
 
-    const {myStream, peerStreams} = this.state
+    const {roomTitle, myStream, peerStreams, audioOn, videoOn} = this.state
 
     if (!myStream) {
-      return <h1>Initializing...</h1>
+      return (
+        <div id='hero' className='container'>
+          <h3>Joining {roomTitle}...</h3>
+        </div>
+      )
     }
 
     return (
-      <div>
-        <MyStream stream={myStream} />
-        <hr />
-        {
-          Object.keys(peerStreams).map((id) => {
-            return (
-              <video key={id} src={URL.createObjectURL(peerStreams[id])} autoPlay />
-            )
-          })
-        }
+      <div id='chat'>
+        <PeerStreams peerStreams={peerStreams} />
+        <MyStream
+          stream={myStream}
+          audioOn={audioOn}
+          onAudioToggle={this.handleAudioToggle.bind(this)}
+          onVideoToggle={this.handleVideoToggle.bind(this)}
+          videoOn={videoOn}
+        />
       </div>
     )
 
