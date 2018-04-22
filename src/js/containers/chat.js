@@ -1,6 +1,8 @@
 import React from 'react'
 import swarm from 'webrtc-swarm'
 import signalhub from 'signalhub'
+import getVideoStream from '../lib/media'
+import MyStream from '../components/my-stream'
 
 const SWARM_NAME = 'p2p.chat-two'
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
@@ -17,7 +19,7 @@ export default class Home extends React.Component {
 
   async componentDidMount() {
 
-    console.log('chat did mount')
+    const myStream = await getVideoStream()
 
     const {room} = this.props
 
@@ -29,6 +31,7 @@ export default class Home extends React.Component {
     sw.on('disconnect', this.handleDisconnect.bind(this))
 
     this.setState({
+      myStream,
       sw
     })
 
@@ -45,14 +48,7 @@ export default class Home extends React.Component {
       this.setState({peerStreams})
     })
 
-    // peer.on('data', (data) => {
-    //   console.log('received data', JSON.parse(data.toString()))
-    //   console.log('adding stream')
-    //   peer.addStream(this.state.myStream)
-    // })
-    // peer.send(JSON.stringify({test: 'hi'}))
-
-    peer.addStream(this.props.myStream)
+    peer.addStream(this.state.myStream)
 
   }
 
@@ -66,12 +62,21 @@ export default class Home extends React.Component {
 
   }
 
+  async getMyStream() {
+
+  }
+
   render() {
 
-    const {peerStreams} = this.state
+    const {myStream, peerStreams} = this.state
+
+    if (!myStream) {
+      return <h1>Initializing...</h1>
+    }
 
     return (
       <div>
+        <MyStream stream={myStream} />
         <hr />
         {
           Object.keys(peerStreams).map((id) => {

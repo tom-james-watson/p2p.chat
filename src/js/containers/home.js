@@ -1,55 +1,43 @@
 import React from 'react'
-import getVideoStream from '../lib/media'
-import MyStream from '../components/my-stream'
-import RoomChooser from '../components/room-chooser'
+import queryString from 'query-string'
 import Chat from './chat'
+import RoomChooser from '../components/room-chooser'
+import Hero from '../components/hero'
 
 export default class Home extends React.Component {
 
   constructor(props) {
+
     super(props)
-    this.state = {}
-  }
 
+    const queryParams = queryString.parse(location.search)
 
-  async componentDidMount() {
-
-    const myStream = await getVideoStream()
-
-    this.setState({
-      myStream,
-    })
+    this.state = {
+      room: queryParams.room
+    }
 
   }
 
   handleChooseRoom(room) {
 
-    console.log('home handleChooseRoom', {room})
-
-    this.setState({
-      room,
-    })
+    // As we have no router, just do a full navigate - we'll pick up the room
+    // from query params on load
+    window.location = `${window.location.href}?room=${room}`
 
   }
 
   render() {
 
-    const {myStream, room} = this.state
+    const {room} = this.state
 
-    if (!myStream) {
-      return <h1>Initializing...</h1>
+    if (room) {
+      return <Chat room={room} />
     }
 
     return (
       <div>
-        <MyStream stream={myStream} />
-        {
-          room ? (
-            <Chat myStream={myStream} room={room} />
-          ) : (
-            <RoomChooser onChooseRoom={this.handleChooseRoom.bind(this)} />
-          )
-        }
+        <Hero />
+        <RoomChooser onChooseRoom={this.handleChooseRoom.bind(this)} />
       </div>
     )
 

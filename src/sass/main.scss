@@ -1,13 +1,26 @@
-/** postcss-bem-linter: define main-component; weak */
-$color: #555;
+@import './lib/normalize.css';
+@import './lib/skeleton.css';
+@import './components/hero';
+@import './components/room-chooser';
 
-.main-component {
-  &__title {
-    color: $color;
-  }
+$backgroundColor: #292b2c;
+$fontColor: #fff;
+$secondaryFontColor: #292b2c;
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
 }
 
-/** postcss-bem-linter: define utilities */
-.u-ellipsis {
-  color: $color;
+body {
+  color: $fontColor;
+  background-color: $backgroundColor;
+  font-size: 1.6rem;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+input {
+  color: $secondaryFontColor;
 }
