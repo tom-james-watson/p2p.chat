@@ -26,6 +26,8 @@ export default class Home extends React.Component {
 
     const {room} = this.props
 
+    window.history.replaceState(null, null,`${window.location.origin}/${room}`)
+
     const hub = signalhub(room, [SIGNALHUB])
     const sw = swarm(hub)
 

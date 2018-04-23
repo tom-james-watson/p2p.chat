@@ -10,7 +10,7 @@ export default class Home extends React.Component {
 
     super(props)
 
-    const queryParams = queryString.parse(location.search)
+    const queryParams = queryString.parse(window.location.search)
 
     this.state = {
       room: queryParams.room
