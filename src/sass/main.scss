@@ -3,6 +3,7 @@
 @import './vars';
 @import './components/hero';
 @import './components/room-chooser';
+@import './components/social';
 @import './components/chat';
 
 *,
@@ -17,6 +18,10 @@ body {
   font-size: 1.6rem;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+iframe {
+  border: 0;
 }
 
 input {

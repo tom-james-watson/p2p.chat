@@ -3,6 +3,7 @@ import queryString from 'query-string'
 import Chat from './chat'
 import RoomChooser from '../components/room-chooser'
 import Hero from '../components/hero'
+import Social from '../components/social'
 
 export default class Home extends React.Component {
 
@@ -38,6 +39,7 @@ export default class Home extends React.Component {
       <div id='home'>
         <Hero />
         <RoomChooser onChooseRoom={this.handleChooseRoom.bind(this)} />
+        <Social />
       </div>
     )
 
