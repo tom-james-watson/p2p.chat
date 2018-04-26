@@ -8,12 +8,12 @@ module.exports = {
 
   output: {
     path: __dirname,
-    filename: 'js/app.js'
+    filename: 'dist/js/app.js'
   },
 
   plugins: [
     // Specify the resulting CSS filename
-    new ExtractTextPlugin('css/app.css'),
+    new ExtractTextPlugin('dist/css/app.css'),
 
     // Stylelint plugin
     new styleLintPlugin({
