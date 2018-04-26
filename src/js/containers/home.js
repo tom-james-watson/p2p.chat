@@ -1,7 +1,7 @@
 import React from 'react'
 import queryString from 'query-string'
 import Chat from './chat'
-import RoomChooser from '../components/room-chooser'
+import CreateRoom from '../components/create-room'
 import Hero from '../components/hero'
 import Social from '../components/social'
 
@@ -14,31 +14,31 @@ export default class Home extends React.Component {
     const queryParams = queryString.parse(window.location.search)
 
     this.state = {
-      room: queryParams.room
+      roomCode: queryParams.room
     }
 
   }
 
-  handleChooseRoom(room) {
+  handleCreateRoom(roomCode) {
 
     // As we have no router, just do a full navigate - we'll pick up the room
     // from query params on load
-    window.location = `${window.location.href}?room=${room}`
+    window.location = `${window.location.href}?room=${roomCode}`
 
   }
 
   render() {
 
-    const {room} = this.state
+    const {roomCode} = this.state
 
-    if (room) {
-      return <Chat room={room} />
+    if (roomCode) {
+      return <Chat roomCode={roomCode} />
     }
 
     return (
       <div id='home'>
         <Hero />
-        <RoomChooser onChooseRoom={this.handleChooseRoom.bind(this)} />
+        <CreateRoom onCreateRoom={this.handleCreateRoom.bind(this)} />
         <Social />
       </div>
     )

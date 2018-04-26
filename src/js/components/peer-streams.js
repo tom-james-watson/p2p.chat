@@ -1,4 +1,5 @@
 import React from 'react'
+import AwaitingPeers from './awaiting-peers'
 
 export default (props) => {
 
@@ -7,6 +8,7 @@ export default (props) => {
   let rows, columns
 
   const total = Object.keys(peerStreams).length
+
   const x = Math.sqrt(total)
   const y = Math.ceil(total / x)
 
@@ -26,6 +28,7 @@ export default (props) => {
 
   return (
     <div id="peer-streams" style={gridStyle}>
+      {total === 0 ? <AwaitingPeers /> : null}
       {
         Object.keys(peerStreams).map((id) => {
           return (

@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const styleLintPlugin = require('stylelint-webpack-plugin')
 
@@ -23,7 +24,12 @@ module.exports = {
       syntax: 'scss',
       failOnError: false,
       quiet: false
-    })
+    }),
+
+    new webpack.EnvironmentPlugin([
+      "NODE_ENV"
+    ]),
+
   ],
 
   module: {

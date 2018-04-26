@@ -1,9 +1,12 @@
 import React from 'react'
 import swarm from 'webrtc-swarm'
 import signalhub from 'signalhub'
+import {decodeRoom} from '../lib/room-encoding'
 import getVideoStream from '../lib/media'
 import MyStream from '../components/my-stream'
 import PeerStreams from '../components/peer-streams'
+import InvalidRoom from '../components/invalid-room'
+import JoiningRoom from '../components/joining-room'
 
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
@@ -12,9 +15,19 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props)
 
+    let roomName
+    let invalidRoom = false
+
+    try {
+      roomName = decodeRoom(props.roomCode)
+    } catch(e) {
+      invalidRoom = true
+    }
+
     this.state = {
+      roomName,
+      invalidRoom,
       peerStreams: {},
-      roomTitle: props.room.split('/')[1],
       audioOn: true,
       videoOn: true,
     }
@@ -22,13 +35,23 @@ export default class Home extends React.Component {
 
   async componentDidMount() {
 
+    const {invalidRoom} = this.state
+    const {roomCode} = this.props
+
+    if (invalidRoom) {
+      return
+    }
+
     const myStream = await getVideoStream()
 
-    const {room} = this.props
+    // In production, we have a Netlify redirect that will change
+    // p2p.chat/rzzks2qAd78/tom to p2p.chat?room=rzzks2qAd78/tom
+    // So, lets switch the URL back to the clean version.
+    if (process.env.NODE_ENV === 'production') {
+      window.history.replaceState(null, null,`${window.location.origin}/${roomCode}`)
+    }
 
-    window.history.replaceState(null, null,`${window.location.origin}/${room}`)
-
-    const hub = signalhub(room, [SIGNALHUB])
+    const hub = signalhub(roomCode, [SIGNALHUB])
     const sw = swarm(hub)
 
     sw.on('peer', this.handleConnect.bind(this))
@@ -44,11 +67,11 @@ export default class Home extends React.Component {
 
   handleConnect(peer, id) {
 
-    console.log('connected to a new peer:', {id})
+    console.info('connected to a new peer:', {id})
 
     peer.on('stream', (stream) => {
       const peerStreams = Object.assign({}, this.state.peerStreams)
-      console.log('received stream', {id, stream})
+      console.info('received stream', {id, stream})
       peerStreams[id] = stream
       this.setState({peerStreams})
     })
@@ -59,15 +82,11 @@ export default class Home extends React.Component {
 
   handleDisconnect(peer, id) {
 
-    console.log('disconnected from a peer:', id)
+    console.info('disconnected from a peer:', id)
 
     const peerStreams = Object.assign({}, this.state.peerStreams)
     delete peerStreams[id]
     this.setState({peerStreams})
-
-  }
-
-  async getMyStream() {
 
   }
 
@@ -97,13 +116,17 @@ export default class Home extends React.Component {
 
   render() {
 
-    const {roomTitle, myStream, peerStreams, audioOn, videoOn} = this.state
+    const {invalidRoom, roomName, myStream, peerStreams, audioOn, videoOn} = this.state
+
+    if (invalidRoom) {
+      return (
+        <InvalidRoom />
+      )
+    }
 
     if (!myStream) {
       return (
-        <div id='hero' className='container'>
-          <h3>Joining {roomTitle}...</h3>
-        </div>
+        <JoiningRoom roomName={roomName} />
       )
     }
 
