@@ -1,1 +1,1 @@
-/:sid/:room /?room=:sid/:room
+/:sid/:room / 200
