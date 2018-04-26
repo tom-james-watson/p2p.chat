@@ -4,7 +4,7 @@
   "description": "P2P Video Chat",
   "main": "webpack.config.js",
   "scripts": {
-    "start": "./node_modules/.bin/webpack-dev-server --config webpack.config.js --port 3001 --hot --inline",
+    "start": "./node_modules/.bin/webpack-dev-server --config webpack.config.js --port 3001 --hot --inline --history-api-fallback",
     "test": "echo \"Error: no test specified\" && exit 1",
     "bundle": "NODE_ENV=production ./node_modules/.bin/webpack --config webpack.config.js"
   },
@@ -51,7 +51,6 @@
     "eslint-config-tomjwatson": "^0.1.0",
     "getusermedia": "^2.0.1",
     "media-recorder-stream": "^2.1.1",
-    "query-string": "^6.0.0",
     "react-feather": "^1.1.0",
     "shorthash": "0.0.2",
     "signalhub": "^4.9.0",

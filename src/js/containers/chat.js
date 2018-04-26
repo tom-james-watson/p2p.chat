@@ -44,13 +44,6 @@ export default class Home extends React.Component {
 
     const myStream = await getVideoStream()
 
-    // In production, we have a Netlify redirect that will change
-    // p2p.chat/rzzks2qAd78/tom to p2p.chat?room=rzzks2qAd78/tom
-    // So, lets switch the URL back to the clean version.
-    if (process.env.NODE_ENV === 'production') {
-      window.history.replaceState(null, null,`${window.location.origin}/${roomCode}`)
-    }
-
     const hub = signalhub(roomCode, [SIGNALHUB])
     const sw = swarm(hub)
 
