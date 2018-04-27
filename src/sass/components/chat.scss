@@ -32,37 +32,48 @@
   }
 
   #my-stream {
-    display: flex;
+    position: relative;
+    text-align: center;
     height: 30%;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    background-color: $secondaryBackgroundColor;
+    margin: 0 2rem;
 
     #my-video {
-      margin: 0 3rem;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      margin-bottom: 2rem;
     }
 
-    .control {
-      border-radius: 50%;
-      width: 5rem;
-      height: 5rem;
-      line-height: 5rem;
-      margin: 0;
-      padding: 0;
+    #controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin-bottom: 3rem;
 
-      &.on {
-        background-color: rgba(0, 0, 0, 0.1);
-        border: 0;
+      .control {
+        border-radius: 50%;
+        width: 5rem;
+        height: 5rem;
+        line-height: 5rem;
+        margin: 0 1rem;
+        padding: 0;
 
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.2);
+        &.on {
+          background-color: rgba(100, 100, 100, 0.4);
           border: 0;
-        }
-      }
 
-      svg {
-        vertical-align: middle;
+          &:hover {
+            background-color: rgba(100, 100, 100, 0.3);
+            border: 0;
+          }
+        }
+
+        svg {
+          vertical-align: middle;
+        }
       }
     }
   }

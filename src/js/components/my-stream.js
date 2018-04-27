@@ -14,14 +14,12 @@ export default function(props) {
   })
 
   return (
-    <div id="my-stream">
-      <div>
+    <div id='my-stream'>
+      <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
+      <div id='controls'>
         <button className={videoClassNames} onClick={onVideoToggle}>
           { videoOn ? <Video /> : <VideoOff /> }
         </button>
-      </div>
-      <video id="my-video" src={URL.createObjectURL(stream)} autoPlay muted />
-      <div>
         <button className={audioClassNames} onClick={onAudioToggle}>
           { audioOn ? <Mic /> : <MicOff /> }
         </button>
