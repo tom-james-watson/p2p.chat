@@ -113,27 +113,26 @@ export default class Home extends React.Component {
     const {invalidRoom, roomName, myStream, peerStreams, audioOn, videoOn} = this.state
 
     if (invalidRoom) {
-      return (
-        <InvalidRoom />
-      )
+      return <InvalidRoom />
     }
 
     if (!myStream) {
-      return (
-        <JoiningRoom roomName={roomName} />
-      )
+      return <JoiningRoom roomName={roomName} />
     }
+
+    const awaitingPeers = Object.keys(peerStreams).length === 0
 
     return (
       <div id='chat'>
         <ChatHeader roomName={roomName} />
-        <PeerStreams peerStreams={peerStreams} />
+        <PeerStreams peerStreams={peerStreams} shrunk={awaitingPeers} />
         <MyStream
           stream={myStream}
           audioOn={audioOn}
           onAudioToggle={this.handleAudioToggle.bind(this)}
           onVideoToggle={this.handleVideoToggle.bind(this)}
           videoOn={videoOn}
+          expanded={awaitingPeers}
         />
       </div>
     )

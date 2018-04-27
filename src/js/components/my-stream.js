@@ -4,7 +4,7 @@ import { Mic, MicOff, Video, VideoOff } from 'react-feather';
 
 export default function(props) {
 
-  const {stream, videoOn, onVideoToggle, audioOn, onAudioToggle} = props
+  const {stream, videoOn, onVideoToggle, audioOn, onAudioToggle, expanded} = props
 
   const videoClassNames = classNames('button-primary control', {
     on: videoOn
@@ -12,9 +12,10 @@ export default function(props) {
   const audioClassNames = classNames('button-primary control', {
     on: audioOn
   })
+  const myStreamClassNames = classNames({expanded})
 
   return (
-    <div id='my-stream'>
+    <div id='my-stream' className={myStreamClassNames}>
       <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
       <div id='controls'>
         <button className={videoClassNames} onClick={onVideoToggle}>

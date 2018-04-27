@@ -15,10 +15,14 @@
   }
 
   #peer-streams {
-    height: calc(70% - 4rem);
     display: grid;
     padding: 2rem;
     grid-gap: 2rem;
+    height: calc(70% - 4rem);
+
+    &.shrunk {
+      height: calc(50% - 4rem);
+    }
 
     #awaiting-peers {
       margin-top: 4rem;
@@ -34,14 +38,19 @@
   #my-stream {
     position: relative;
     text-align: center;
-    height: 30%;
     margin: 0 2rem;
+    height: 30%;
+
+    &.expanded {
+      height: 50%;
+    }
 
     #my-video {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
+      max-height: calc(100% - 2rem);
       margin: auto;
       margin-bottom: 2rem;
     }

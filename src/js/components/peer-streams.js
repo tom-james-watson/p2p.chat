@@ -1,9 +1,10 @@
 import React from 'react'
+import classNames from 'classnames'
 import AwaitingPeers from './awaiting-peers'
 
 export default (props) => {
 
-  const {peerStreams} = props
+  const {peerStreams, shrunk} = props
 
   let rows, columns
 
@@ -21,13 +22,14 @@ export default (props) => {
     columns = y
   }
 
-  const gridStyle = {
+  const peerStreamsClassNames = classNames({shrunk})
+  const peerStreamsStyle = {
     gridTemplateRows: `repeat(${rows}, 1fr)`,
     gridTemplateColumns: `repeat(${columns}, 1fr)`
   }
 
   return (
-    <div id="peer-streams" style={gridStyle}>
+    <div id="peer-streams" style={peerStreamsStyle} className={peerStreamsClassNames}>
       {total === 0 ? <AwaitingPeers /> : null}
       {
         Object.keys(peerStreams).map((id) => {
