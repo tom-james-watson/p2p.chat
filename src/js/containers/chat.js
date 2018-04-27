@@ -7,7 +7,7 @@ import ChatHeader from '../components/chat-header'
 import MyStream from '../components/my-stream'
 import PeerStreams from '../components/peer-streams'
 import InvalidRoom from '../components/invalid-room'
-import JoiningRoom from '../components/joining-room'
+import JoinRoom from '../components/join-room'
 
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
@@ -34,14 +34,9 @@ export default class Home extends React.Component {
     }
   }
 
-  async componentDidMount() {
+  async handleRequestPerms() {
 
-    const {invalidRoom} = this.state
     const {roomCode} = this.props
-
-    if (invalidRoom) {
-      return
-    }
 
     const myStream = await getVideoStream()
 
@@ -117,7 +112,12 @@ export default class Home extends React.Component {
     }
 
     if (!myStream) {
-      return <JoiningRoom roomName={roomName} />
+      return (
+        <JoinRoom
+          roomName={roomName}
+          onRequestPerms={this.handleRequestPerms.bind(this)}
+        />
+      )
     }
 
     const awaitingPeers = Object.keys(peerStreams).length === 0
