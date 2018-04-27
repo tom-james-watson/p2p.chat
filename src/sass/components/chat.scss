@@ -1,9 +1,28 @@
 #chat {
+  #chat-header {
+    height: 4rem;
+    padding: 1rem;
+    padding-bottom: 0;
+    text-align: center;
+  }
+
+  .invite {
+    margin-left: 1rem;
+    padding: 0 1rem;
+    height: 30px;
+    line-height: 30px;
+    color: $fontColor;
+  }
+
   #peer-streams {
-    height: 70%;
+    height: calc(70% - 4rem);
     display: grid;
     padding: 2rem;
     grid-gap: 2rem;
+
+    #awaiting-peers {
+      margin-top: 4rem;
+    }
 
     .peer-stream {
       display: flex;
@@ -33,11 +52,11 @@
       padding: 0;
 
       &.on {
-        background: 0;
+        background-color: rgba(0, 0, 0, 0.1);
         border: 0;
 
         &:hover {
-          background: 0;
+          background-color: rgba(0, 0, 0, 0.2);
           border: 0;
         }
       }

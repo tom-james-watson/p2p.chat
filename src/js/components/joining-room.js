@@ -5,7 +5,7 @@ export default (props) => {
   const {roomName} = props
 
   return (
-    <div id='hero' className='container'>
+    <div className='hero container'>
       <h3>Joining {roomName}...</h3>
     </div>
   )

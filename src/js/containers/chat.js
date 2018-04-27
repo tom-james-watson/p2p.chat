@@ -3,6 +3,7 @@ import swarm from 'webrtc-swarm'
 import signalhub from 'signalhub'
 import {decodeRoom} from '../lib/room-encoding'
 import getVideoStream from '../lib/media'
+import ChatHeader from '../components/chat-header'
 import MyStream from '../components/my-stream'
 import PeerStreams from '../components/peer-streams'
 import InvalidRoom from '../components/invalid-room'
@@ -125,6 +126,7 @@ export default class Home extends React.Component {
 
     return (
       <div id='chat'>
+        <ChatHeader roomName={roomName} />
         <PeerStreams peerStreams={peerStreams} />
         <MyStream
           stream={myStream}

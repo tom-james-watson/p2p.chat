@@ -1,11 +1,15 @@
 import React from 'react'
+import CopyLink from './copy-link'
 
-export default () => {
+export default (props) => {
+
+  const {onCopy} = props
 
   return (
-    <div id='hero' className='container'>
+    <div id='awaiting-peers' className='hero container'>
       <h3>Searching for peers...</h3>
-      <p>Looks like you're the only one here at the moment.</p>
+      <p>Invite to start a video call</p>
+      <CopyLink />
     </div>
   )
 

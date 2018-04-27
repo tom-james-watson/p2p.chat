@@ -48,6 +48,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.5",
+    "copy-to-clipboard": "^3.0.8",
     "eslint-config-tomjwatson": "^0.1.0",
     "getusermedia": "^2.0.1",
     "media-recorder-stream": "^2.1.1",
