@@ -43,6 +43,12 @@ body,
       margin-bottom: 1rem;
     }
 
+    @media (max-height: 450px) {
+      #my-video {
+        display: none;
+      }
+    }
+
     #controls {
       position: absolute;
       bottom: 0;
