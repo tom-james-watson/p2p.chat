@@ -25,6 +25,9 @@ export default class SetNickname extends React.Component {
 
     const {onSetNickname} = this.props
 
+    nickname = nickname.replace(/\s\s+/g, ' ')
+    nickname = nickname.trim()
+
     onSetNickname(nickname)
 
   }
@@ -42,7 +45,7 @@ export default class SetNickname extends React.Component {
           <div>
             <input
               type='text'
-              placeholder='e.g. Chris'
+              placeholder='e.g. tom'
               value={this.state.roomValue}
               onChange={evt => this.onChange(evt)}
               required
