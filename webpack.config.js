@@ -4,6 +4,12 @@ const styleLintPlugin = require('stylelint-webpack-plugin')
 
 require('es6-promise').polyfill()
 
+const env = process.env.NODE_ENV || 'development'
+
+console.info(`Building bundle for ${env}`)
+
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+
 module.exports = {
   entry: './src/main.js',
 
@@ -26,9 +32,13 @@ module.exports = {
       quiet: false
     }),
 
-    new webpack.EnvironmentPlugin([
-      "NODE_ENV"
-    ]),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify(env)
+      }
+    }),
+
+    new UglifyJsPlugin()
 
   ],
 

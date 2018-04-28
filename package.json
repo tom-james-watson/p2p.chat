@@ -56,6 +56,7 @@
     "react-feather": "^1.1.0",
     "shorthash": "0.0.2",
     "signalhub": "^4.9.0",
+    "uglifyjs-webpack-plugin": "^1.0.1",
     "webrtc-swarm": "github:tom-james-watson/webrtc-swarm"
   }
 }
