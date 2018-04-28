@@ -12,7 +12,7 @@ import SetNickname from '../components/set-nickname'
 
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
-export default class Home extends React.Component {
+export default class Chat extends React.Component {
 
   constructor(props) {
 
@@ -31,8 +31,6 @@ export default class Home extends React.Component {
       roomName,
       invalidRoom,
       peerStreams: {},
-      audioOn: true,
-      videoOn: true,
     }
 
   }
@@ -116,34 +114,10 @@ export default class Home extends React.Component {
 
   }
 
-  handleVideoToggle() {
-
-    const {myStream, videoOn} = this.state
-
-    myStream.getVideoTracks()[0].enabled = !videoOn
-
-    this.setState({
-      videoOn: !videoOn
-    })
-
-  }
-
-  handleAudioToggle() {
-
-    const {myStream, audioOn} = this.state
-
-    myStream.getAudioTracks()[0].enabled = !audioOn
-
-    this.setState({
-      audioOn: !audioOn
-    })
-
-  }
-
   render() {
 
     const {created} = this.props
-    const {nickname, invalidRoom, roomName, myStream, peerStreams, audioOn, videoOn} = this.state
+    const {nickname, invalidRoom, roomName, myStream, peerStreams} = this.state
 
     if (invalidRoom) {
       return <InvalidRoom />
@@ -195,10 +169,6 @@ export default class Home extends React.Component {
           myStream ? (
             <MyStream
               stream={myStream}
-              audioOn={audioOn}
-              onAudioToggle={this.handleAudioToggle.bind(this)}
-              onVideoToggle={this.handleVideoToggle.bind(this)}
-              videoOn={videoOn}
               expanded={awaitingPeers}
             />
           ) : null
