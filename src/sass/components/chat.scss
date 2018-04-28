@@ -1,3 +1,12 @@
+html,
+body,
+#app,
+#home,
+#chat {
+  height: 100%;
+  width: 100%;
+}
+
 #chat {
   #chat-header {
     height: 4rem;
@@ -12,27 +21,6 @@
     height: 30px;
     line-height: 30px;
     color: $fontColor;
-  }
-
-  #peer-streams {
-    display: grid;
-    padding: 2rem;
-    grid-gap: 2rem;
-    height: calc(70% - 4rem);
-
-    &.shrunk {
-      height: calc(50% - 4rem);
-    }
-
-    #awaiting-peers {
-      margin-top: 4rem;
-    }
-
-    .peer-stream {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 
   #my-stream {
@@ -71,11 +59,11 @@
         padding: 0;
 
         &.on {
-          background-color: rgba(100, 100, 100, 0.4);
+          background-color: $transparentBackgroundColor;
           border: 0;
 
           &:hover {
-            background-color: rgba(100, 100, 100, 0.3);
+            background-color: $transparentBackgroundHoverColor;
             border: 0;
           }
         }

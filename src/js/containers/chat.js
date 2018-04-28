@@ -41,9 +41,7 @@ export default class Home extends React.Component {
 
     const myStream = await getVideoStream()
 
-    this.setState({
-      myStream
-    })
+    this.setState({myStream})
 
   }
 
@@ -88,20 +86,23 @@ export default class Home extends React.Component {
 
       console.log('received data', {id, data})
 
-      if (data.type === 'receivedNickname') {
+      if (data.type === 'receivedHandshake') {
         peer.addStream(this.state.myStream)
       }
 
-      if (data.type === 'sendNickname') {
+      if (data.type === 'sendHandshake') {
         const peerStreams = Object.assign({}, this.state.peerStreams)
         peerStreams[id].nickname = data.nickname
-        peer.send(JSON.stringify({type: 'receivedNickname'}))
+        peer.send(JSON.stringify({type: 'receivedHandshake'}))
         this.setState({peerStreams})
       }
 
     })
 
-    peer.send(JSON.stringify({type: 'sendNickname', nickname}))
+    peer.send(JSON.stringify({
+      type: 'sendHandshake',
+      nickname,
+    }))
 
   }
 

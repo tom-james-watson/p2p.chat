@@ -4,9 +4,10 @@
 @import './components/hero';
 @import './components/create-room';
 @import './components/social';
+@import './components/chat';
 @import './components/request-perms';
 @import './components/set-nickname';
-@import './components/chat';
+@import './components/peer-streams';
 
 *,
 ::before,
@@ -28,14 +29,4 @@ iframe {
 
 input {
   color: $secondaryFontColor;
-}
-
-html,
-body,
-#app,
-#home,
-#chat,
-#peer-streams {
-  height: 100%;
-  width: 100%;
 }
