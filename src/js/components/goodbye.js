@@ -4,8 +4,8 @@ export default () => {
 
   return (
     <div className='hero container'>
-      <h3>404 - Page not found</h3>
-      <p>Oops - this page doesn't exist!</p>
+      <h1>👋</h1>
+      <h5>Call ended.</h5>
       <a
         href="/"
         className='button button-primary home-button'

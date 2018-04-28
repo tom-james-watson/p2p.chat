@@ -1,6 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
-import {Mic, MicOff, Video, VideoOff} from 'react-feather';
+import {Mic, MicOff, X, Video, VideoOff} from 'react-feather';
 
 export default class Chat extends React.Component {
 
@@ -40,6 +40,12 @@ export default class Chat extends React.Component {
 
   }
 
+  handleHangUp() {
+
+    window.location = `${window.location.origin}/goodbye`
+
+  }
+
   render() {
 
     const {stream, audioOn, videoOn} = this.state
@@ -60,6 +66,9 @@ export default class Chat extends React.Component {
         <div id='controls'>
           <button className={videoClassNames} onClick={this.handleVideoToggle.bind(this)}>
             { videoOn ? <Video /> : <VideoOff /> }
+          </button>
+          <button id='hang-up' className='button-primary control' onClick={this.handleHangUp}>
+            <X />
           </button>
           <button className={audioClassNames} onClick={this.handleAudioToggle.bind(this)}>
             { audioOn ? <Mic /> : <MicOff /> }

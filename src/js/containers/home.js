@@ -4,6 +4,7 @@ import Chat from './chat'
 import CreateRoom from '../components/create-room'
 import Hero from '../components/hero'
 import Social from '../components/social'
+import Goodbye from '../components/goodbye'
 import NotFound from '../components/not-found'
 
 export default class Home extends React.Component {
@@ -37,6 +38,10 @@ export default class Home extends React.Component {
       this.state = {
         route: 'home'
       }
+    } else if (pathname === '/goodbye') {
+      this.state = {
+        route: 'goodbye'
+      }
     } else {
       this.state = {
         route: '404'
@@ -68,6 +73,10 @@ export default class Home extends React.Component {
     return <Chat roomCode={roomCode} created={created} />
   }
 
+  renderGoodbye() {
+    return <Goodbye />
+  }
+
   render404() {
     return <NotFound />
   }
@@ -79,6 +88,7 @@ export default class Home extends React.Component {
     const pages = {
       'home': this.renderHome,
       'chat': this.renderChat,
+      'goodbye': this.renderGoodbye,
       '404': this.render404,
     }
 

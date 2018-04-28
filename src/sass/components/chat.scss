@@ -58,6 +58,16 @@ body,
         margin: 0 1rem;
         padding: 0;
 
+        &#hang-up {
+          background-color: $hangUpBackgroundColor;
+          border: 0;
+
+          &:hover {
+            background-color: $hangUpBackgroundColor;
+            border: 0;
+          }
+        }
+
         &.on {
           background-color: $transparentBackgroundColor;
           border: 0;
