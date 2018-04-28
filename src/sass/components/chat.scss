@@ -26,7 +26,7 @@ body,
   #my-stream {
     position: relative;
     text-align: center;
-    margin: 0 2rem;
+    margin: 0 1rem;
     height: 30%;
 
     &.expanded {
@@ -38,9 +38,9 @@ body,
       bottom: 0;
       left: 0;
       right: 0;
-      max-height: calc(100% - 2rem);
+      max-height: calc(100% - 1rem);
       margin: auto;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
     #controls {
@@ -48,7 +48,7 @@ body,
       bottom: 0;
       left: 0;
       right: 0;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
 
       .control {
         border-radius: 50%;

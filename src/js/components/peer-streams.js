@@ -2,14 +2,15 @@ import React from 'react'
 import classNames from 'classnames'
 import {User} from 'react-feather';
 import AwaitingPeers from './awaiting-peers'
+import PeerStream from './peer-stream'
 
-export default class Home extends React.Component {
+export default class PeerStreams extends React.Component {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      height: 0
+      height: 0,
     }
   }
 
@@ -61,35 +62,26 @@ export default class Home extends React.Component {
       gridTemplateColumns: `repeat(${columns}, 1fr)`
     }
 
-    const maxVideoWidth = `calc(${width / columns}px - 4rem)`
-    const maxVideoHeight = `calc(${height / rows}px - 4rem)`
-
-    console.log({width, height, maxVideoWidth, maxVideoHeight, rows, columns})
+    const cellWidth = width / columns
+    const cellHeight = height / rows
 
     return (
       <div
         id="peer-streams"
-        ref={ (peerStreams) => this.peerStreams = peerStreams}
+        ref={(peerStreams) => {this.peerStreams = peerStreams}}
         style={peerStreamsStyle}
         className={peerStreamsClassNames}
       >
         {total === 0 ? <AwaitingPeers /> : null}
         {
           Object.keys(peerStreams).map((id) => {
-            if (!peerStreams[id].stream) {
-              return null
-            }
             return (
-              <div key={id} className='peer-stream'>
-                <div className='stream-wrapper'>
-                  <button className='nickname' disabled>{peerStreams[id].nickname}</button>
-                  <video
-                    src={URL.createObjectURL(peerStreams[id].stream)}
-                    style={{maxWidth: maxVideoWidth, maxHeight: maxVideoHeight}}
-                    autoPlay
-                  />
-                </div>
-              </div>
+              <PeerStream
+                key={id}
+                peerStream={peerStreams[id]}
+                cellWidth={cellWidth}
+                cellHeight={cellHeight}
+              />
             )
           })
         }
