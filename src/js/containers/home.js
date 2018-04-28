@@ -1,4 +1,5 @@
 import React from 'react'
+import queryString from 'query-string'
 import Chat from './chat'
 import CreateRoom from '../components/create-room'
 import Hero from '../components/hero'
@@ -19,9 +20,18 @@ export default class Home extends React.Component {
     if (/^\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$/.test(pathname)) {
       // Paths that match this are valid room codes.
       const roomCode = pathname.slice(1)
+
+      // If we created the room ourselves, there'll be a ?created=true
+      const queryParams = queryString.parse(window.location.search)
+      const created = queryParams.created
+
+      // Clean params from URL
+      window.history.replaceState(null, null, `${window.location.origin}${pathname}`)
+
       this.state = {
         route: 'chat',
-        roomCode
+        roomCode,
+        created
       }
     } else if (pathname === '/') {
       this.state = {
@@ -39,7 +49,7 @@ export default class Home extends React.Component {
 
     // As we have no router, just do a full navigate - we'll pick up the room
     // from the url on load.
-    window.location = `${window.location.origin}/${roomCode}`
+    window.location = `${window.location.origin}/${roomCode}?created=true`
 
   }
 
@@ -54,8 +64,8 @@ export default class Home extends React.Component {
   }
 
   renderChat() {
-    const {roomCode} = this.state
-    return <Chat roomCode={roomCode} />
+    const {roomCode, created} = this.state
+    return <Chat roomCode={roomCode} created={created} />
   }
 
   render404() {

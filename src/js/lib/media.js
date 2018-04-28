@@ -2,7 +2,7 @@ import getMedia from 'getusermedia'
 
 export default async function getVideoStream() {
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
 
     const opts = {
       video: {

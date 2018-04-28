@@ -1,5 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
+import {User} from 'react-feather';
 import AwaitingPeers from './awaiting-peers'
 
 export default (props) => {
@@ -33,9 +34,12 @@ export default (props) => {
       {total === 0 ? <AwaitingPeers /> : null}
       {
         Object.keys(peerStreams).map((id) => {
+          if (!peerStreams[id].stream) {
+            return null
+          }
           return (
             <div key={id} className='peer-stream'>
-              <video src={URL.createObjectURL(peerStreams[id])} autoPlay />
+              <video src={URL.createObjectURL(peerStreams[id].stream)} autoPlay />
             </div>
           )
         })

@@ -7,13 +7,15 @@ import ChatHeader from '../components/chat-header'
 import MyStream from '../components/my-stream'
 import PeerStreams from '../components/peer-streams'
 import InvalidRoom from '../components/invalid-room'
-import JoinRoom from '../components/join-room'
+import RequestPerms from '../components/request-perms'
+import SetNickname from '../components/set-nickname'
 
 const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
 
 export default class Home extends React.Component {
 
   constructor(props) {
+
     super(props)
 
     let roomName
@@ -32,13 +34,22 @@ export default class Home extends React.Component {
       audioOn: true,
       videoOn: true,
     }
+
   }
 
   async handleRequestPerms() {
 
-    const {roomCode} = this.props
-
     const myStream = await getVideoStream()
+
+    this.setState({
+      myStream
+    })
+
+  }
+
+  async handleSetNickname(nickname) {
+
+    const {roomCode} = this.props
 
     const hub = signalhub(roomCode, [SIGNALHUB])
     const sw = swarm(hub)
@@ -48,7 +59,7 @@ export default class Home extends React.Component {
     sw.on('disconnect', this.handleDisconnect.bind(this))
 
     this.setState({
-      myStream,
+      nickname,
       sw
     })
 
@@ -56,16 +67,41 @@ export default class Home extends React.Component {
 
   handleConnect(peer, id) {
 
+    const {nickname} = this.state
+
     console.info('connected to a new peer:', {id})
+
+    const peerStreams = Object.assign({}, this.state.peerStreams)
+    peerStreams[id] = {}
+    this.setState({peerStreams})
 
     peer.on('stream', (stream) => {
       const peerStreams = Object.assign({}, this.state.peerStreams)
       console.info('received stream', {id, stream})
-      peerStreams[id] = stream
+      peerStreams[id].stream = stream
       this.setState({peerStreams})
     })
 
-    peer.addStream(this.state.myStream)
+    peer.on('data', (payload) => {
+
+      const data = JSON.parse(payload.toString())
+
+      console.log('received data', {id, data})
+
+      if (data.type === 'receivedNickname') {
+        peer.addStream(this.state.myStream)
+      }
+
+      if (data.type === 'sendNickname') {
+        const peerStreams = Object.assign({}, this.state.peerStreams)
+        peerStreams[id].nickname = data.nickname
+        peer.send(JSON.stringify({type: 'receivedNickname'}))
+        this.setState({peerStreams})
+      }
+
+    })
+
+    peer.send(JSON.stringify({type: 'sendNickname', nickname}))
 
   }
 
@@ -105,7 +141,8 @@ export default class Home extends React.Component {
 
   render() {
 
-    const {invalidRoom, roomName, myStream, peerStreams, audioOn, videoOn} = this.state
+    const {created} = this.props
+    const {nickname, invalidRoom, roomName, myStream, peerStreams, audioOn, videoOn} = this.state
 
     if (invalidRoom) {
       return <InvalidRoom />
@@ -113,8 +150,9 @@ export default class Home extends React.Component {
 
     if (!myStream) {
       return (
-        <JoinRoom
+        <RequestPerms
           roomName={roomName}
+          created={created}
           onRequestPerms={this.handleRequestPerms.bind(this)}
         />
       )
@@ -124,16 +162,46 @@ export default class Home extends React.Component {
 
     return (
       <div id='chat'>
-        <ChatHeader roomName={roomName} />
-        <PeerStreams peerStreams={peerStreams} shrunk={awaitingPeers} />
-        <MyStream
-          stream={myStream}
-          audioOn={audioOn}
-          onAudioToggle={this.handleAudioToggle.bind(this)}
-          onVideoToggle={this.handleVideoToggle.bind(this)}
-          videoOn={videoOn}
-          expanded={awaitingPeers}
-        />
+        {
+          !myStream && !nickname ? (
+            <RequestPerms
+              roomName={roomName}
+              created={created}
+              onRequestPerms={this.handleRequestPerms.bind(this)}
+            />
+          ) : null
+        }
+        {
+          myStream && !nickname ? (
+            <SetNickname
+              roomName={roomName}
+              created={created}
+              onSetNickname={this.handleSetNickname.bind(this)}
+            />
+          ) : null
+        }
+        {
+          nickname && myStream ? (
+            <ChatHeader roomName={roomName} />
+          ) : null
+        }
+        {
+          nickname && myStream ? (
+            <PeerStreams peerStreams={peerStreams} shrunk={awaitingPeers} />
+          ) : null
+        }
+        {
+          myStream ? (
+            <MyStream
+              stream={myStream}
+              audioOn={audioOn}
+              onAudioToggle={this.handleAudioToggle.bind(this)}
+              onVideoToggle={this.handleVideoToggle.bind(this)}
+              videoOn={videoOn}
+              expanded={awaitingPeers}
+            />
+          ) : null
+        }
       </div>
     )
 

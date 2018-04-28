@@ -1,6 +1,6 @@
 import React from 'react'
 import classNames from 'classnames'
-import { Mic, MicOff, Video, VideoOff } from 'react-feather';
+import {Mic, MicOff, Video, VideoOff} from 'react-feather';
 
 export default function(props) {
 

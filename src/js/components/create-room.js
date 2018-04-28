@@ -21,16 +21,6 @@ export default class CreateRoom extends React.Component {
 
   }
 
-  onKeyPress(evt) {
-
-    const {roomValue} = this.state
-
-    if (evt.key === 'Enter') {
-      this.onCreateRoom(roomValue)
-    }
-
-  }
-
   onCreateRoom(text) {
 
     const {onCreateRoom} = this.props
@@ -67,22 +57,22 @@ export default class CreateRoom extends React.Component {
 
     return (
       <div id='create-room' className='container'>
-        <div>
+        <form onSubmit={(e) => {e.preventDefault(); this.onCreateRoom(roomValue)}}>
           <input
             type='text'
             placeholder='e.g. engineering standup'
             value={this.state.roomValue}
             onChange={evt => this.onChange(evt)}
-            onKeyPress={evt => this.onKeyPress(evt)}
+            required
+            minLength="3"
           />
           <button
-            type='button'
+            type='submit'
             className='button-primary'
-            onClick={() => this.onCreateRoom(roomValue)}
           >
             Create Room
           </button>
-        </div>
+        </form>
       </div>
     )
 
