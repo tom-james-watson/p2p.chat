@@ -10,7 +10,7 @@ import InvalidRoom from '../components/invalid-room'
 import RequestPerms from '../components/request-perms'
 import SetNickname from '../components/set-nickname'
 
-const SIGNALHUB = 'https://tomjwatson-signalhub.herokuapp.com'
+const SIGNALHUB = 'https://signalhub.p2p.chat'
 
 export default class Chat extends React.Component {
 
