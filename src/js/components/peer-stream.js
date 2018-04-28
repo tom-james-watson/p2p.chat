@@ -1,6 +1,5 @@
 import React from 'react'
 import classNames from 'classnames'
-import {Loader} from 'react-feather';
 import AwaitingPeers from './awaiting-peers'
 
 export default class PeerStream extends React.Component {
@@ -69,9 +68,7 @@ export default class PeerStream extends React.Component {
           {
             videoReady ? (
               <button className='nickname' disabled>{peerStream.nickname}</button>
-            ) : (
-              <Loader />
-            )
+            ) : null
           }
           <video
             key="thghfgjhgfh"
