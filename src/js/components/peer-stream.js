@@ -40,22 +40,30 @@ export default class PeerStream extends React.Component {
     const {peerStream, cellWidth, cellHeight} = this.props
     const {videoReady, videoWidth, videoHeight} = this.state
 
+    const cellAspectRatio = cellWidth / cellHeight
+
+    const videoAspectRatio = videoWidth / videoHeight
+
     // Make placeholder a 4:3 black box
+    let placeHolderWidth, placeHolderHeight
+
+    if (cellAspectRatio > 4 / 3) {
+      placeHolderHeight = cellHeight
+      placeHolderWidth = cellHeight * 4 / 3
+    } else {
+      placeHolderWidth = cellWidth
+      placeHolderHeight = cellWidth / 4 * 3
+    }
+
     const placeHolderStyle = {
-      width: `calc(${cellWidth}px - 2rem)`,
-      height: `${cellWidth / 4 * 3}px`,
-      maxWidth: `calc(${cellWidth}px - 2rem)`,
-      maxHeight: `calc(${cellHeight}px - 2rem)`
+      width: `calc(${placeHolderWidth}px - 2rem)`,
+      height: `calc(${placeHolderHeight}px - 2rem)`,
     }
 
     const videoStyle = {
       maxWidth: `calc(${cellWidth}px - 2rem)`,
       maxHeight: `calc(${cellHeight}px - 2rem)`
     }
-
-    const cellAspectRatio = cellWidth / cellHeight
-
-    const videoAspectRatio = videoWidth / videoHeight
 
     if (videoReady) {
       if (videoAspectRatio < cellAspectRatio) {
