@@ -2,6 +2,7 @@ import React from 'react'
 import classNames from 'classnames'
 import {User} from 'react-feather';
 import AwaitingPeers from './awaiting-peers'
+import InitializingSwarm from './initializing-swarm'
 import PeerStream from './peer-stream'
 
 export default class PeerStreams extends React.Component {
@@ -37,7 +38,7 @@ export default class PeerStreams extends React.Component {
 
   render() {
 
-    const {peerStreams, shrunk} = this.props
+    const {peerStreams, shrunk, swarmInitialized} = this.props
     const {width, height} = this.state
 
     let rows, columns
@@ -72,9 +73,10 @@ export default class PeerStreams extends React.Component {
         style={peerStreamsStyle}
         className={peerStreamsClassNames}
       >
-        {total === 0 ? <AwaitingPeers /> : null}
+        {!swarmInitialized ? <InitializingSwarm /> : null}
+        {swarmInitialized && total === 0 ? <AwaitingPeers /> : null}
         {
-          Object.keys(peerStreams).map((id) => {
+          swarmInitialized && Object.keys(peerStreams).map((id) => {
             return (
               <PeerStream
                 key={id}

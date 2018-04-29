@@ -57,6 +57,7 @@
     "shorthash": "0.0.2",
     "signalhub": "^4.9.0",
     "uglifyjs-webpack-plugin": "^1.0.1",
+    "uuid": "^3.2.1",
     "webrtc-swarm": "github:tom-james-watson/webrtc-swarm"
   }
 }

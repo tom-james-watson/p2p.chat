@@ -3,8 +3,6 @@ import CopyLink from './copy-link'
 
 export default (props) => {
 
-  const {onCopy} = props
-
   return (
     <div id='awaiting-peers' className='hero container'>
       <h3>Waiting for peers...</h3>

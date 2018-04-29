@@ -1,5 +1,6 @@
 import React from 'react'
 import swarm from 'webrtc-swarm'
+import uuidv4 from 'uuid/v4'
 import signalhub from 'signalhub'
 import {decodeRoom} from '../lib/room-encoding'
 import getVideoStream from '../lib/media'
@@ -31,6 +32,8 @@ export default class Chat extends React.Component {
       roomName,
       invalidRoom,
       peerStreams: {},
+      swarmInitialized: false,
+      myUuid: uuidv4(),
     }
 
   }
@@ -45,13 +48,32 @@ export default class Chat extends React.Component {
 
   async handleSetNickname(nickname) {
 
+    this.setState({
+      nickname
+    })
+
+    this.connectToSwarm()
+
+  }
+
+  connectToSwarm() {
+
+    const {myUuid} = this.state
     const {roomCode} = this.props
 
     const hub = signalhub(roomCode, [SIGNALHUB])
+
+    hub.subscribe('all').on('data', this.handleHubData.bind(this))
+
     const sw = swarm(
       hub,
       {
         config: { iceServers: [ { urls: 'stun:stun.l.google.com:19302' } ] },
+        uuid: myUuid,
+        wrap: (outgoingSignalingData, destinationSignalhubChannel) => {
+          outgoingSignalingData.fromNickname = this.state.nickname
+          return outgoingSignalingData
+        },
       }
     )
 
@@ -59,10 +81,21 @@ export default class Chat extends React.Component {
 
     sw.on('disconnect', this.handleDisconnect.bind(this))
 
-    this.setState({
-      nickname,
-      sw
-    })
+  }
+
+  handleHubData(message) {
+
+    const {swarmInitialized, myUuid} = this.state
+
+    if (!swarmInitialized) {
+      this.setState({swarmInitialized: true})
+    }
+
+    if (message.type === 'connect' && message.from !== myUuid) {
+
+      console.info('connecting to', {uuid: message.from, nickname: message.fromNickname})
+
+    }
 
   }
 
@@ -87,7 +120,7 @@ export default class Chat extends React.Component {
 
       const data = JSON.parse(payload.toString())
 
-      console.log('received data', {id, data})
+      console.info('received data', {id, data})
 
       if (data.type === 'receivedHandshake') {
         peer.addStream(this.state.myStream)
@@ -122,7 +155,7 @@ export default class Chat extends React.Component {
   render() {
 
     const {created} = this.props
-    const {nickname, invalidRoom, roomName, myStream, peerStreams} = this.state
+    const {nickname, invalidRoom, roomName, myStream, swarmInitialized, peerStreams} = this.state
 
     if (invalidRoom) {
       return <InvalidRoom />
@@ -167,14 +200,18 @@ export default class Chat extends React.Component {
         }
         {
           nickname && myStream ? (
-            <PeerStreams peerStreams={peerStreams} shrunk={awaitingPeers} />
+            <PeerStreams
+              peerStreams={peerStreams}
+              swarmInitialized={swarmInitialized}
+              shrunk={!swarmInitialized || awaitingPeers}
+            />
           ) : null
         }
         {
           myStream ? (
             <MyStream
               stream={myStream}
-              expanded={awaitingPeers}
+              expanded={!swarmInitialized || awaitingPeers}
             />
           ) : null
         }
