@@ -48,7 +48,12 @@ export default class Chat extends React.Component {
     const {roomCode} = this.props
 
     const hub = signalhub(roomCode, [SIGNALHUB])
-    const sw = swarm(hub)
+    const sw = swarm(
+      hub,
+      {
+        config: { iceServers: [ { urls: 'stun:stun.l.google.com:19302' } ] },
+      }
+    )
 
     sw.on('peer', this.handleConnect.bind(this))
 
