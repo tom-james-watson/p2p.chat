@@ -10,7 +10,7 @@ console.info(`Building bundle for ${env}`)
 
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
-module.exports = {
+const config = {
   entry: './src/main.js',
 
   output: {
@@ -37,8 +37,6 @@ module.exports = {
         'NODE_ENV': JSON.stringify(env)
       }
     }),
-
-    new UglifyJsPlugin()
 
   ],
 
@@ -73,3 +71,9 @@ module.exports = {
   // Create Sourcemaps for the bundle
   devtool: 'source-map'
 }
+
+if (env === 'production') {
+  config.plugins.push(new UglifyJsPlugin())
+}
+
+module.exports = config
