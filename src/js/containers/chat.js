@@ -85,7 +85,7 @@ export default class Chat extends React.Component {
 
   handleHubData(message) {
 
-    const {swarmInitialized, myUuid} = this.state
+    const {swarmInitialized, myUuid, peerStreams} = this.state
 
     if (!swarmInitialized) {
       this.setState({swarmInitialized: true})
@@ -93,7 +93,29 @@ export default class Chat extends React.Component {
 
     if (message.type === 'connect' && message.from !== myUuid) {
 
-      console.info('connecting to', {uuid: message.from, nickname: message.fromNickname})
+      if (!peerStreams[message.from]) {
+
+        console.info('connecting to', {uuid: message.from, nickname: message.fromNickname})
+
+        // Add the peer to the peerStreams with just his nickname so we can
+        // show a placeholder whilst the peers finish handshaking
+        const newPeerStreams = Object.assign({}, peerStreams)
+        newPeerStreams[message.from] = {nickname: message.fromNickname}
+        this.setState({peerStreams: newPeerStreams})
+
+        // If the peers never successfully finish handshaking and share
+        // streams, clear up the peer
+        setTimeout(() => {
+          const {peerStreams} = this.state
+          const newPeerStreams = Object.assign({}, peerStreams)
+
+          if (peerStreams[message.from] && !peerStreams[message.from].stream) {
+            delete newPeerStreams[message.from]
+            this.setState({peerStreams: newPeerStreams})
+          }
+        }, 20000)
+
+      }
 
     }
 
@@ -106,7 +128,7 @@ export default class Chat extends React.Component {
     console.info('connected to a new peer:', {id})
 
     const peerStreams = Object.assign({}, this.state.peerStreams)
-    peerStreams[id] = {}
+    peerStreams[id] = Object.assign({}, peerStreams[id])
     this.setState({peerStreams})
 
     peer.on('stream', (stream) => {
@@ -147,8 +169,11 @@ export default class Chat extends React.Component {
     console.info('disconnected from a peer:', id)
 
     const peerStreams = Object.assign({}, this.state.peerStreams)
-    delete peerStreams[id]
-    this.setState({peerStreams})
+
+    if (peerStreams[id] && peerStreams[id].stream) {
+      delete peerStreams[id]
+      this.setState({peerStreams})
+    }
 
   }
 

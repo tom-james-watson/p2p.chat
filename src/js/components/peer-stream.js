@@ -1,6 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import AwaitingPeers from './awaiting-peers'
+import {Loader} from 'react-feather';
 
 export default class PeerStream extends React.Component {
 
@@ -39,11 +40,15 @@ export default class PeerStream extends React.Component {
     const {peerStream, cellWidth, cellHeight} = this.props
     const {videoReady, videoWidth, videoHeight} = this.state
 
-    if (!peerStream.stream) {
-      return null
+    // Make placeholder a 4:3 black box
+    const placeHolderStyle = {
+      width: `calc(${cellWidth}px - 2rem)`,
+      height: `${cellWidth / 4 * 3}px`,
+      maxWidth: `calc(${cellWidth}px - 2rem)`,
+      maxHeight: `calc(${cellHeight}px - 2rem)`
     }
 
-    const style = {
+    const videoStyle = {
       maxWidth: `calc(${cellWidth}px - 2rem)`,
       maxHeight: `calc(${cellHeight}px - 2rem)`
     }
@@ -54,29 +59,36 @@ export default class PeerStream extends React.Component {
 
     if (videoReady) {
       if (videoAspectRatio < cellAspectRatio) {
-        style.height = `calc(${cellHeight}px - 2rem)`
+        videoStyle.height = `calc(${cellHeight}px - 2rem)`
       } else {
-        style.width = `calc(${cellWidth}px - 2rem)`
+        videoStyle.width = `calc(${cellWidth}px - 2rem)`
       }
     } else {
-      style.display = 'none'
+      videoStyle.display = 'none'
     }
 
     return (
       <div className='peer-stream'>
         <div className='stream-wrapper'>
           {
-            videoReady ? (
+            !peerStream.stream || videoReady ? (
               <button className='nickname' disabled>{peerStream.nickname}</button>
             ) : null
           }
-          <video
-            key="thghfgjhgfh"
-            ref={(video) => {this.video = video}}
-            src={URL.createObjectURL(peerStream.stream)}
-            style={style}
-            autoPlay
-          />
+          {
+            peerStream.stream ? (
+              <video
+                ref={(video) => {this.video = video}}
+                src={URL.createObjectURL(peerStream.stream)}
+                style={videoStyle}
+                autoPlay
+              />
+            ) : (
+              <div className='video-placeholder' style={placeHolderStyle}>
+                <Loader size={32} className='spinner' />
+              </div>
+            )
+          }
         </div>
       </div>
     )

@@ -20,6 +20,13 @@
     .stream-wrapper {
       position: relative;
 
+      .video-placeholder {
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       .nickname {
         position: absolute;
         bottom: 1rem;
