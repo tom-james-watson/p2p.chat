@@ -18,8 +18,8 @@ body,
   .invite {
     margin-left: 1rem;
     padding: 0 1rem;
-    height: 30px;
-    line-height: 30px;
+    height: 3rem;
+    line-height: 3rem;
     color: $fontColor;
   }
 
@@ -43,7 +43,7 @@ body,
       margin-bottom: 1rem;
     }
 
-    @media (max-height: 450px) {
+    @media (max-height: 45rem) {
       #my-video {
         display: none;
       }
