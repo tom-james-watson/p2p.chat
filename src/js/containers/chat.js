@@ -52,11 +52,11 @@ export default class Chat extends React.Component {
       nickname
     })
 
-    this.connectToSwarm()
+    this.connectToSwarm(nickname)
 
   }
 
-  connectToSwarm() {
+  connectToSwarm(nickname) {
 
     const {myUuid} = this.state
     const {roomCode} = this.props
@@ -71,7 +71,7 @@ export default class Chat extends React.Component {
         config: { iceServers: [ { urls: 'stun:stun.l.google.com:19302' } ] },
         uuid: myUuid,
         wrap: (outgoingSignalingData, destinationSignalhubChannel) => {
-          outgoingSignalingData.fromNickname = this.state.nickname
+          outgoingSignalingData.fromNickname = nickname
           return outgoingSignalingData
         },
       }
@@ -80,6 +80,16 @@ export default class Chat extends React.Component {
     sw.on('peer', this.handleConnect.bind(this))
 
     sw.on('disconnect', this.handleDisconnect.bind(this))
+
+    // Send initial connect signal
+    hub.broadcast(
+      roomCode,
+      {
+        type: 'connect',
+        from: myUuid,
+        fromNickname: nickname
+      }
+    )
 
   }
 
