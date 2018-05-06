@@ -41,6 +41,7 @@ body,
       max-height: calc(100% - 1rem);
       margin: auto;
       margin-bottom: 1rem;
+      transform: rotateY(180deg);
     }
 
     @media (max-height: 20rem) {
