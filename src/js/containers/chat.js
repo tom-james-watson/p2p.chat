@@ -38,6 +38,8 @@ export default class Chat extends React.Component {
       videoOn: true,
     }
 
+    window.addEventListener('resize', this.forceUpdate.bind(this, () => {}))
+
   }
 
   async handleRequestPerms() {
