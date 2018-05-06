@@ -1,7 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import AwaitingPeers from './awaiting-peers'
-import {Loader} from 'react-feather';
+import {MicOff, VideoOff, Loader} from 'react-feather';
 
 export default class PeerStream extends React.Component {
 
@@ -78,11 +78,15 @@ export default class PeerStream extends React.Component {
     return (
       <div className='peer-stream'>
         <div className='stream-wrapper'>
-          {
-            !peerStream.stream || videoReady ? (
-              <button className='nickname' disabled>{peerStream.nickname}</button>
-            ) : null
-          }
+          <div className='stream-status'>
+            {
+              !peerStream.stream || videoReady ? (
+                <button className='nickname' disabled>{peerStream.nickname}</button>
+              ) : null
+            }
+            {peerStream.stream && !peerStream.audioOn ? <MicOff size={18} /> : null}
+            {peerStream.stream && !peerStream.videoOn ? <VideoOff size={18} /> : null}
+          </div>
           {
             peerStream.stream ? (
               <video

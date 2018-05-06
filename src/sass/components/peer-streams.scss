@@ -34,16 +34,24 @@
         vertical-align: bottom;
       }
 
-      .nickname {
+      .stream-status {
         position: absolute;
         bottom: 1rem;
         left: 1rem;
-        padding: 0 1rem;
-        margin: 0;
-        height: 3rem;
-        line-height: 3rem;
-        color: $fontColor;
-        background-color: $transparentBackgroundColor;
+
+        .nickname {
+          padding: 0 1rem;
+          margin: 0;
+          height: 3rem;
+          line-height: 3rem;
+          color: $fontColor;
+          background-color: $transparentBackgroundColor;
+        }
+
+        svg {
+          margin-left: 1rem;
+          vertical-align: middle;
+        }
       }
     }
   }

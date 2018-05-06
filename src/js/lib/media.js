@@ -1,6 +1,6 @@
 import getMedia from 'getusermedia'
 
-export default async function getVideoStream() {
+export default async function getMyStream() {
 
   return new Promise(async (resolve, reject) => {
 
@@ -18,7 +18,8 @@ export default async function getVideoStream() {
 
     getMedia(opts, function (err, media) {
       if (err) throw err
-      resolve(media)
+      // TODO - handle failing video / audio
+      resolve({myStream: media, audioOn: true, videoOn: true})
     })
 
   })

@@ -3,7 +3,7 @@ import swarm from 'webrtc-swarm'
 import uuidv4 from 'uuid/v4'
 import signalhub from 'signalhub'
 import {decodeRoom} from '../lib/room-encoding'
-import getVideoStream from '../lib/media'
+import getMyStream from '../lib/media'
 import ChatHeader from '../components/chat-header'
 import MyStream from '../components/my-stream'
 import PeerStreams from '../components/peer-streams'
@@ -34,15 +34,17 @@ export default class Chat extends React.Component {
       peerStreams: {},
       swarmInitialized: false,
       myUuid: uuidv4(),
+      audioOn: true,
+      videoOn: true,
     }
 
   }
 
   async handleRequestPerms() {
 
-    const myStream = await getVideoStream()
+    const {myStream, audioOn, videoOn} = await getMyStream()
 
-    this.setState({myStream})
+    this.setState({myStream, audioOn, videoOn})
 
   }
 
@@ -138,7 +140,11 @@ export default class Chat extends React.Component {
     console.info('connected to a new peer:', {id})
 
     const peerStreams = Object.assign({}, this.state.peerStreams)
-    peerStreams[id] = Object.assign({}, peerStreams[id])
+    peerStreams[id] = Object.assign({}, peerStreams[id], {
+      peer,
+      audioOn: true,
+      videoOn: true,
+    })
     this.setState({peerStreams})
 
     peer.on('stream', (stream) => {
@@ -150,18 +156,40 @@ export default class Chat extends React.Component {
 
     peer.on('data', (payload) => {
 
+      const {myStream, audioOn, videoOn} = this.state
+
       const data = JSON.parse(payload.toString())
 
       console.info('received data', {id, data})
 
       if (data.type === 'receivedHandshake') {
-        peer.addStream(this.state.myStream)
+        if (myStream) {
+          peer.addStream(myStream)
+        }
+        if (!audioOn) {
+          peer.send(JSON.stringify({type: 'audioToggle', enabled: false}))
+        }
+        if (!videoOn) {
+          peer.send(JSON.stringify({type: 'videoToggle', enabled: false}))
+        }
       }
 
       if (data.type === 'sendHandshake') {
         const peerStreams = Object.assign({}, this.state.peerStreams)
         peerStreams[id].nickname = data.nickname
         peer.send(JSON.stringify({type: 'receivedHandshake'}))
+        this.setState({peerStreams})
+      }
+
+      if (data.type === 'audioToggle') {
+        const peerStreams = Object.assign({}, this.state.peerStreams)
+        peerStreams[id].audioOn = data.enabled
+        this.setState({peerStreams})
+      }
+
+      if (data.type === 'videoToggle') {
+        const peerStreams = Object.assign({}, this.state.peerStreams)
+        peerStreams[id].videoOn = data.enabled
         this.setState({peerStreams})
       }
 
@@ -187,10 +215,53 @@ export default class Chat extends React.Component {
 
   }
 
+  handleVideoToggle() {
+
+    const {peerStreams, myStream, videoOn} = this.state
+
+    myStream.getVideoTracks()[0].enabled = !videoOn
+
+    for (const id of Object.keys(peerStreams)) {
+      const peerStream = peerStreams[id]
+      peerStream.peer.send(JSON.stringify({type: 'videoToggle', enabled: !videoOn}))
+    }
+
+    this.setState({
+      videoOn: !videoOn
+    })
+
+  }
+
+  handleAudioToggle() {
+
+    const {peerStreams, myStream, audioOn} = this.state
+
+    myStream.getAudioTracks()[0].enabled = !audioOn
+
+    for (const id of Object.keys(peerStreams)) {
+      const peerStream = peerStreams[id]
+      peerStream.peer.send(JSON.stringify({type: 'audioToggle', enabled: !audioOn}))
+    }
+
+    this.setState({
+      audioOn: !audioOn
+    })
+
+  }
+
+  handleHangUp() {
+
+    window.location = `${window.location.origin}/goodbye`
+
+  }
+
   render() {
 
     const {created} = this.props
-    const {nickname, invalidRoom, roomName, myStream, swarmInitialized, peerStreams} = this.state
+    const {
+      nickname, invalidRoom, roomName, myStream, swarmInitialized, peerStreams,
+      audioOn, videoOn
+    } = this.state
 
     if (invalidRoom) {
       return <InvalidRoom />
@@ -246,6 +317,11 @@ export default class Chat extends React.Component {
           myStream ? (
             <MyStream
               stream={myStream}
+              audioOn={audioOn}
+              videoOn={videoOn}
+              handleAudioToggle={this.handleAudioToggle.bind(this)}
+              handleVideoToggle={this.handleVideoToggle.bind(this)}
+              handleHangUp={this.handleHangUp.bind(this)}
               expanded={!swarmInitialized || awaitingPeers}
             />
           ) : null
