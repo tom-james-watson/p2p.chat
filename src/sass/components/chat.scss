@@ -56,6 +56,12 @@ body,
       left: 0;
       right: 0;
       margin-bottom: 2rem;
+      transition: opacity 0.5s ease;
+      opacity: 0;
+
+      &.shown {
+        opacity: 1;
+      }
 
       .control {
         border-radius: 50%;
