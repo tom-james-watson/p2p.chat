@@ -1,6 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import Controls from './controls';
+import MyVideo from './my-video';
 
 export default function(props) {
 
@@ -13,7 +14,7 @@ export default function(props) {
 
   return (
     <div id='my-stream' className={myStreamClassNames}>
-      <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
+      <MyVideo stream={stream} />
       <Controls
         audioOn={audioOn}
         videoOn={videoOn}

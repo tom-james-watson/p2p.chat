@@ -1,4 +1,5 @@
 import React from 'react'
+import shallowCompare from 'react-addons-shallow-compare'
 import classNames from 'classnames'
 import {User} from 'react-feather';
 import AwaitingPeers from './awaiting-peers'
@@ -23,12 +24,33 @@ export default class PeerStreams extends React.Component {
     this.recalculateGrid()
   }
 
-  recalculateGrid() {
+  shouldComponentUpdate(nextProps, nextState) {
+
+    const {width, height} = this.state
+    const {newWidth, newHeight} = this.calculateNewDimensions()
+
+    const dimensionsChanged = width !== newWidth || height !== newHeight
+
+    return dimensionsChanged || shallowCompare(this, nextProps, nextState);
+
+  }
+
+  calculateNewDimensions() {
 
     const {width, height} = this.state
 
     const newWidth = this.peerStreams.clientWidth
     const newHeight = this.peerStreams.clientHeight
+
+    return {newWidth, newHeight}
+
+  }
+
+  recalculateGrid() {
+
+    const {width, height} = this.state
+
+    const {newWidth, newHeight} = this.calculateNewDimensions()
 
     if (newWidth !== width || newHeight !== height) {
       this.setState({width: newWidth, height: newHeight})
