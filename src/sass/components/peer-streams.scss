@@ -54,12 +54,18 @@
         }
       }
 
-      .user-no-video {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        padding: 20%;
+      .peer-no-video {
         color: $userNoVideoColor;
+        background: #000;
+        border-radius: 0.6rem;
+        box-shadow: 0 0 1rem #000;
+
+        svg {
+          height: 100%;
+          width: 100%;
+          padding: 10%;
+          min-height: 30px;
+        }
       }
     }
   }

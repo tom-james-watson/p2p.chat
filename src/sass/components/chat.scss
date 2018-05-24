@@ -96,6 +96,19 @@ body,
         }
       }
     }
+
+    .no-video {
+      height: 100%;
+      width: 100%;
+      max-width: 300px;
+      padding: 10%;
+      border-radius: 0.6rem;
+      box-shadow: 0 0 1rem #000;
+      color: $userNoVideoColor;
+      background: #000;
+      margin: auto;
+      margin-bottom: 1rem;
+    }
   }
 
   video {

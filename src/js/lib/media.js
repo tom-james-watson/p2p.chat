@@ -1,27 +1,65 @@
 import getMedia from 'getusermedia'
 
-export default async function getMyStream() {
+async function getMediaStream(opts) {
 
   return new Promise(async (resolve, reject) => {
 
-    const opts = {
-      video: {
-        mandatory: {
-          maxWidth: 640,
-          maxHeight: 480,
-          maxAspectRatio: 4/3,
-          maxFrameRate: 24,
-        },
-      },
-      audio: true
-    }
+    getMedia(opts, function (err, stream) {
 
-    getMedia(opts, function (err, media) {
-      if (err) throw err
-      // TODO - handle failing video / audio
-      resolve({myStream: media, audioOn: true, videoOn: true})
+      if (err) {
+        return reject(err)
+      }
+
+      resolve(stream)
+
     })
 
   })
+
+}
+
+export default async function getMyStream() {
+
+  const video = {
+    mandatory: {
+      maxWidth: 640,
+      maxHeight: 480,
+      maxAspectRatio: 4/3,
+      maxFrameRate: 24,
+    }
+  }
+  const audio = true
+
+  try {
+
+    // Try and get video and audio
+    const stream = await getMediaStream({video, audio})
+    return {myStream: stream, audioEnabled: true, videoEnabled: true}
+
+  } catch(e) {
+
+    try {
+
+      // If that fails, try just audio
+      const stream = await getMediaStream({audio})
+      return {myStream: stream, audioEnabled: true, videoEnabled: false}
+
+    } catch(e) {
+
+      try {
+
+        // If that fails, try just video
+        const stream = await getMediaStream({video})
+        return {myStream: stream, audioEnabled: false, videoEnabled: true}
+
+      } catch(e) {
+
+        throw 'No video or audio'
+
+      }
+
+    }
+
+  }
 
 }

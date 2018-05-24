@@ -1,5 +1,6 @@
 import React from 'react'
 import shallowCompare from 'react-addons-shallow-compare'
+import {User} from 'react-feather'
 
 export default class MyVideo extends React.Component {
 
@@ -11,11 +12,17 @@ export default class MyVideo extends React.Component {
 
   render() {
 
-    const {stream} = this.props
+    const {stream, videoOn, videoEnabled} = this.props
 
-    return (
-      <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
-    )
+    if (videoEnabled && videoOn) {
+      return (
+        <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
+      )
+    } else {
+      return (
+        <User className='no-video' />
+      )
+    }
 
   }
 

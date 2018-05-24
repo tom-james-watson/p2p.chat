@@ -1,7 +1,8 @@
 import React from 'react'
 import classNames from 'classnames'
 import AwaitingPeers from './awaiting-peers'
-import {MicOff, User, Loader} from 'react-feather';
+import {MicOff, User} from 'react-feather'
+import LoadingIndicator from './loading-indicator'
 
 export default class PeerStream extends React.Component {
 
@@ -10,8 +11,8 @@ export default class PeerStream extends React.Component {
     super(props)
 
     this.state = {
-      videoWidth: 0,
-      videoHeight: 0
+      videoWidth: null,
+      videoHeight: null
     }
 
   }
@@ -23,7 +24,7 @@ export default class PeerStream extends React.Component {
     }
 
     this.video.onloadedmetadata = () => {
-      if (this.state.videoWidth || this.state.videoHeight) {
+      if (this.state.videoWidth !== null || this.state.videoHeight !== null) {
         return
       }
       this.setState({
@@ -60,6 +61,11 @@ export default class PeerStream extends React.Component {
       height: `calc(${placeHolderHeight}px - 2rem)`,
     }
 
+    const noVideoStyle = {
+      width: `calc(${placeHolderWidth}px - 2rem)`,
+      height: `calc(${placeHolderHeight}px - 2rem)`,
+    }
+
     const videoStyle = {
       maxWidth: `calc(${cellWidth}px - 2rem)`,
       maxHeight: `calc(${cellHeight}px - 2rem)`
@@ -79,27 +85,39 @@ export default class PeerStream extends React.Component {
       <div className='peer-stream'>
         <div className='stream-wrapper'>
           <div className='stream-status'>
+            <button className='nickname' disabled>{peerStream.nickname}</button>
             {
-              !peerStream.stream || videoReady ? (
-                <button className='nickname' disabled>{peerStream.nickname}</button>
+              (peerStream.connected && !peerStream.audioOn) ? (
+                <MicOff size={18} />
               ) : null
             }
-            {peerStream.stream && !peerStream.audioOn ? <MicOff size={18} /> : null}
           </div>
-          {peerStream.stream && !peerStream.videoOn ? <User className='user-no-video' /> : null}
           {
-            peerStream.stream ? (
-              <video
-                ref={(video) => {this.video = video}}
-                src={URL.createObjectURL(peerStream.stream)}
-                style={videoStyle}
-                autoPlay
-              />
-            ) : (
+            (peerStream.connected && (!peerStream.stream || !peerStream.videoOn)) ? (
+              <div className='peer-no-video' style={noVideoStyle}><User /></div>
+            ) : null
+          }
+          {peerStream.stream && (peerStream.videoOn) ? (
+            <video
+              ref={(video) => {this.video = video}}
+              src={URL.createObjectURL(peerStream.stream)}
+              style={videoStyle}
+              autoPlay
+            />
+          ) : null}
+          {peerStream.stream && (!peerStream.videoOn && peerStream.audioOn) ? (
+            <audio
+              src={URL.createObjectURL(peerStream.stream)}
+              style={videoStyle}
+              autoPlay
+            />
+          ) : null}
+          {
+            !peerStream.connected ? (
               <div className='video-placeholder' style={placeHolderStyle}>
-                <Loader size={32} className='spinner' />
+                <LoadingIndicator />
               </div>
-            )
+            ) : null
           }
         </div>
       </div>

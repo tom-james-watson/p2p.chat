@@ -36,6 +36,8 @@ export default class Chat extends React.Component {
       myUuid: uuidv4(),
       audioOn: true,
       videoOn: true,
+      audioEnabled: true,
+      videoEnabled: true,
     }
 
     window.addEventListener('resize', this.forceUpdate.bind(this, () => {}))
@@ -44,9 +46,12 @@ export default class Chat extends React.Component {
 
   async handleRequestPerms() {
 
-    const {myStream, audioOn, videoOn} = await getMyStream()
-
-    this.setState({myStream, audioOn, videoOn})
+    try {
+      const {myStream, audioEnabled, videoEnabled} = await getMyStream()
+      this.setState({myStream, audioEnabled, videoEnabled})
+    } catch(e) {
+      this.setState({noStream: true})
+    }
 
   }
 
@@ -62,7 +67,7 @@ export default class Chat extends React.Component {
 
   connectToSwarm(nickname) {
 
-    const {myUuid} = this.state
+    const {myUuid, myStream} = this.state
     const {roomCode} = this.props
 
     const hub = signalhub(roomCode, [SIGNALHUB])
@@ -78,6 +83,7 @@ export default class Chat extends React.Component {
           outgoingSignalingData.fromNickname = nickname
           return outgoingSignalingData
         },
+        stream: myStream
       }
     )
 
@@ -121,9 +127,9 @@ export default class Chat extends React.Component {
         // streams, clear up the peer
         setTimeout(() => {
           const {peerStreams} = this.state
-          const newPeerStreams = Object.assign({}, peerStreams)
 
-          if (peerStreams[message.from] && !peerStreams[message.from].stream) {
+          if (peerStreams[message.from] && !peerStreams[message.from].connected) {
+            const newPeerStreams = Object.assign({}, peerStreams)
             delete newPeerStreams[message.from]
             this.setState({peerStreams: newPeerStreams})
           }
@@ -139,39 +145,33 @@ export default class Chat extends React.Component {
 
     const {nickname} = this.state
 
-    console.info('connected to a new peer:', {id})
+    console.info('connected to a new peer:', {id, peer})
 
     const peerStreams = Object.assign({}, this.state.peerStreams)
-    peerStreams[id] = Object.assign({}, peerStreams[id], {
+    const pkg = {
       peer,
       audioOn: true,
       videoOn: true,
-    })
+    }
+    if (peer.streams) {
+      pkg.stream = peer.streams[0]
+    }
+    peerStreams[id] = Object.assign({}, peerStreams[id], pkg)
     this.setState({peerStreams})
-
-    peer.on('stream', (stream) => {
-      const peerStreams = Object.assign({}, this.state.peerStreams)
-      console.info('received stream', {id, stream})
-      peerStreams[id].stream = stream
-      this.setState({peerStreams})
-    })
 
     peer.on('data', (payload) => {
 
-      const {myStream, audioOn, videoOn} = this.state
+      const {myStream, audioOn, videoOn, audioEnabled, videoEnabled} = this.state
 
       const data = JSON.parse(payload.toString())
 
       console.info('received data', {id, data})
 
       if (data.type === 'receivedHandshake') {
-        if (myStream) {
-          peer.addStream(myStream)
-        }
-        if (!audioOn) {
+        if (!audioOn || !audioEnabled) {
           peer.send(JSON.stringify({type: 'audioToggle', enabled: false}))
         }
-        if (!videoOn) {
+        if (!videoOn || !videoEnabled) {
           peer.send(JSON.stringify({type: 'videoToggle', enabled: false}))
         }
       }
@@ -179,6 +179,7 @@ export default class Chat extends React.Component {
       if (data.type === 'sendHandshake') {
         const peerStreams = Object.assign({}, this.state.peerStreams)
         peerStreams[id].nickname = data.nickname
+        peerStreams[id].connected = true
         peer.send(JSON.stringify({type: 'receivedHandshake'}))
         this.setState({peerStreams})
       }
@@ -225,7 +226,9 @@ export default class Chat extends React.Component {
 
     for (const id of Object.keys(peerStreams)) {
       const peerStream = peerStreams[id]
-      peerStream.peer.send(JSON.stringify({type: 'videoToggle', enabled: !videoOn}))
+      if (peerStream.connected) {
+        peerStream.peer.send(JSON.stringify({type: 'videoToggle', enabled: !videoOn}))
+      }
     }
 
     this.setState({
@@ -242,7 +245,9 @@ export default class Chat extends React.Component {
 
     for (const id of Object.keys(peerStreams)) {
       const peerStream = peerStreams[id]
-      peerStream.peer.send(JSON.stringify({type: 'audioToggle', enabled: !audioOn}))
+      if (peerStream.connected) {
+        peerStream.peer.send(JSON.stringify({type: 'audioToggle', enabled: !audioOn}))
+      }
     }
 
     this.setState({
@@ -262,7 +267,7 @@ export default class Chat extends React.Component {
     const {created} = this.props
     const {
       nickname, invalidRoom, roomName, myStream, swarmInitialized, peerStreams,
-      audioOn, videoOn
+      audioOn, videoOn, audioEnabled, videoEnabled, noStream
     } = this.state
 
     if (invalidRoom) {
@@ -274,6 +279,7 @@ export default class Chat extends React.Component {
         <RequestPerms
           roomName={roomName}
           created={created}
+          noStream={noStream}
           onRequestPerms={this.handleRequestPerms.bind(this)}
         />
       )
@@ -321,6 +327,8 @@ export default class Chat extends React.Component {
               stream={myStream}
               audioOn={audioOn}
               videoOn={videoOn}
+              audioEnabled={audioEnabled}
+              videoEnabled={videoEnabled}
               handleAudioToggle={this.handleAudioToggle.bind(this)}
               handleVideoToggle={this.handleVideoToggle.bind(this)}
               handleHangUp={this.handleHangUp.bind(this)}

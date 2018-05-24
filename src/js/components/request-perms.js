@@ -2,7 +2,7 @@ import React from 'react'
 
 export default (props) => {
 
-  const {roomName, created, onRequestPerms} = props
+  const {roomName, created, noStream, onRequestPerms} = props
 
   return (
     <div id='request-perms' className='container'>
@@ -12,13 +12,19 @@ export default (props) => {
           <h5>You are about to join a video call.</h5>
         ): null
       }
-      <button
-        type='button'
-        className='button-primary'
-        onClick={onRequestPerms}
-      >
-        Allow mic/cam access
-      </button>
+      {
+        !noStream ? (
+          <button
+            type='button'
+            className='button-primary'
+            onClick={onRequestPerms}
+          >
+            Allow mic/cam access
+          </button>
+        ) : (
+          <h5>You cannot join the video call without a mic/cam.</h5>
+        )
+      }
     </div>
   )
 

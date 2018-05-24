@@ -46,8 +46,8 @@ export default class Controls extends React.Component {
   render() {
 
     const {
-      audioOn, videoOn, handleHangUp, handleVideoToggle,
-      handleAudioToggle
+      audioOn, videoOn, audioEnabled, videoEnabled, handleHangUp,
+      handleVideoToggle, handleAudioToggle
     } = this.props
     const {showControls} = this.state
 
@@ -61,13 +61,13 @@ export default class Controls extends React.Component {
 
     return (
       <div id='controls' className={controlsClassNames}>
-        <button className={videoClassNames} onClick={handleVideoToggle}>
+        <button className={videoClassNames} onClick={handleVideoToggle} disabled={!videoEnabled}>
           { videoOn ? <Video /> : <VideoOff /> }
         </button>
         <button id='hang-up' className='button-primary control' onClick={handleHangUp}>
           <X />
         </button>
-        <button className={audioClassNames} onClick={handleAudioToggle}>
+        <button className={audioClassNames} onClick={handleAudioToggle} disabled={!audioEnabled}>
           { audioOn ? <Mic /> : <MicOff /> }
         </button>
       </div>
