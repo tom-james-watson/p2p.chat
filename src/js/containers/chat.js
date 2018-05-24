@@ -4,7 +4,7 @@ import uuidv4 from 'uuid/v4'
 import signalhub from 'signalhub'
 import {decodeRoom} from '../lib/room-encoding'
 import getMyStream from '../lib/media'
-import ChatHeader from '../components/chat-header'
+import Header from '../components/header'
 import MyStream from '../components/my-stream'
 import PeerStreams from '../components/peer-streams'
 import InvalidRoom from '../components/invalid-room'
@@ -311,7 +311,7 @@ export default class Chat extends React.Component {
         }
         {
           initialized && nickname ? (
-            <ChatHeader roomName={roomName} />
+            <Header roomName={roomName} />
           ) : null
         }
         {
