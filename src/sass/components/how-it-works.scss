@@ -1,0 +1,24 @@
+#how-it-works {
+  margin-top: 10rem;
+  padding-top: 10rem;
+  padding-bottom: 6rem;
+  background-color: $secondaryBackgroundColor;
+  color: $secondaryFontColor;
+  text-align: center;
+
+  .how {
+    max-width: 280px;
+    margin: auto;
+    margin-bottom: 4rem;
+
+    .how-title {
+      font-size: 2.4rem;
+      color: $primaryColor;
+    }
+
+    svg {
+      vertical-align: middle;
+      margin: 1rem;
+    }
+  }
+}

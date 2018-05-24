@@ -2,8 +2,10 @@ import React from 'react'
 import queryString from 'query-string'
 import Chat from './chat'
 import CreateRoom from '../components/create-room'
+import Header from '../components/header'
 import Hero from '../components/hero'
 import Social from '../components/social'
+import HowItWorks from '../components/how-it-works'
 import Goodbye from '../components/goodbye'
 import NotFound from '../components/not-found'
 
@@ -61,9 +63,11 @@ export default class Home extends React.Component {
   renderHome() {
     return (
       <div id='home'>
+        <Header />
         <Hero />
         <CreateRoom onCreateRoom={this.handleCreateRoom.bind(this)} />
         <Social />
+        <HowItWorks />
       </div>
     )
   }
