@@ -26,7 +26,7 @@ export default (props) => {
             <div className='feature'>
               <div className='feature-title'>End-to-end encryption</div>
               <Lock size={35} />
-              <div className='feature-text'>Chat to your guests over a secure, encrypted, peer-to-peer connection, powered by WebRTC.</div>
+              <div className='feature-text'>All video, audio and data is sent via an end-to-end encrypted connection using WebRTC.</div>
             </div>
           </div>
         </div>
