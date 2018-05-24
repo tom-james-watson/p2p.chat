@@ -83,7 +83,6 @@ export default class Chat extends React.Component {
           outgoingSignalingData.fromNickname = nickname
           return outgoingSignalingData
         },
-        stream: myStream
       }
     )
 
@@ -153,11 +152,15 @@ export default class Chat extends React.Component {
       audioOn: true,
       videoOn: true,
     }
-    if (peer.streams) {
-      pkg.stream = peer.streams[0]
-    }
     peerStreams[id] = Object.assign({}, peerStreams[id], pkg)
     this.setState({peerStreams})
+
+    peer.on('stream', (stream) => {
+      const peerStreams = Object.assign({}, this.state.peerStreams)
+      console.info('received stream', stream)
+      peerStreams[id].stream = stream
+      this.setState({peerStreams})
+    })
 
     peer.on('data', (payload) => {
 
@@ -168,6 +171,9 @@ export default class Chat extends React.Component {
       console.info('received data', {id, data})
 
       if (data.type === 'receivedHandshake') {
+        if (myStream) {
+          peer.addStream(myStream)
+        }
         if (!audioOn || !audioEnabled) {
           peer.send(JSON.stringify({type: 'audioToggle', enabled: false}))
         }
