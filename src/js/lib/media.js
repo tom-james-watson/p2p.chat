@@ -54,7 +54,7 @@ export default async function getMyStream() {
 
       } catch(e) {
 
-        throw 'No video or audio'
+        return {myStream: null, audioEnabled: false, videoEnabled: false}
 
       }
 

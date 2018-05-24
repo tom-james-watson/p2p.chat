@@ -81,6 +81,13 @@ export default class PeerStream extends React.Component {
       videoStyle.display = 'none'
     }
 
+    console.log({
+      connected: peerStream.connected,
+      videoOn: peerStream.videoOn,
+      audioOn: peerStream.audioOn,
+      stream: peerStream.stream,
+    })
+
     return (
       <div className='peer-stream'>
         <div className='stream-wrapper'>

@@ -46,12 +46,8 @@ export default class Chat extends React.Component {
 
   async handleRequestPerms() {
 
-    try {
-      const {myStream, audioEnabled, videoEnabled} = await getMyStream()
-      this.setState({myStream, audioEnabled, videoEnabled})
-    } catch(e) {
-      this.setState({noStream: true})
-    }
+    const {myStream, audioEnabled, videoEnabled} = await getMyStream()
+    this.setState({initialized: true, myStream, audioEnabled, videoEnabled})
 
   }
 
@@ -272,7 +268,7 @@ export default class Chat extends React.Component {
 
     const {created} = this.props
     const {
-      nickname, invalidRoom, roomName, myStream, swarmInitialized, peerStreams,
+      nickname, invalidRoom, roomName, initialized, myStream, swarmInitialized, peerStreams,
       audioOn, videoOn, audioEnabled, videoEnabled, noStream
     } = this.state
 
@@ -280,7 +276,7 @@ export default class Chat extends React.Component {
       return <InvalidRoom />
     }
 
-    if (!myStream) {
+    if (!initialized) {
       return (
         <RequestPerms
           roomName={roomName}
@@ -296,7 +292,7 @@ export default class Chat extends React.Component {
     return (
       <div id='chat'>
         {
-          !myStream && !nickname ? (
+          !initialized && !nickname ? (
             <RequestPerms
               roomName={roomName}
               created={created}
@@ -305,7 +301,7 @@ export default class Chat extends React.Component {
           ) : null
         }
         {
-          myStream && !nickname ? (
+          initialized && !nickname ? (
             <SetNickname
               roomName={roomName}
               created={created}
@@ -314,12 +310,12 @@ export default class Chat extends React.Component {
           ) : null
         }
         {
-          nickname && myStream ? (
+          initialized && nickname ? (
             <ChatHeader roomName={roomName} />
           ) : null
         }
         {
-          nickname && myStream ? (
+          initialized && nickname ? (
             <PeerStreams
               peerStreams={peerStreams}
               swarmInitialized={swarmInitialized}
@@ -328,7 +324,7 @@ export default class Chat extends React.Component {
           ) : null
         }
         {
-          myStream ? (
+          initialized ? (
             <MyStream
               stream={myStream}
               audioOn={audioOn}

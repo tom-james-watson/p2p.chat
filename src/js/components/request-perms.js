@@ -12,19 +12,13 @@ export default (props) => {
           <h5>You are about to join a video call.</h5>
         ): null
       }
-      {
-        !noStream ? (
-          <button
-            type='button'
-            className='button-primary'
-            onClick={onRequestPerms}
-          >
-            Allow mic/cam access
-          </button>
-        ) : (
-          <h5>You cannot join the video call without a mic/cam.</h5>
-        )
-      }
+      <button
+        type='button'
+        className='button-primary'
+        onClick={onRequestPerms}
+      >
+        Allow mic/cam access
+      </button>
     </div>
   )
 

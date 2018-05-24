@@ -91,6 +91,14 @@ body,
           }
         }
 
+        &:disabled {
+          background-color: $disabledBackgroundColor;
+
+          &:hover {
+            background-color: $disabledBackgroundColor;
+          }
+        }
+
         svg {
           vertical-align: middle;
         }

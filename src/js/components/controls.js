@@ -62,13 +62,13 @@ export default class Controls extends React.Component {
     return (
       <div id='controls' className={controlsClassNames}>
         <button className={videoClassNames} onClick={handleVideoToggle} disabled={!videoEnabled}>
-          { videoOn ? <Video /> : <VideoOff /> }
+          { videoOn && videoEnabled ? <Video /> : <VideoOff /> }
         </button>
         <button id='hang-up' className='button-primary control' onClick={handleHangUp}>
           <X />
         </button>
         <button className={audioClassNames} onClick={handleAudioToggle} disabled={!audioEnabled}>
-          { audioOn ? <Mic /> : <MicOff /> }
+          { audioOn && audioEnabled ? <Mic /> : <MicOff /> }
         </button>
       </div>
     )
