@@ -1,12 +1,22 @@
 # p2p.chat
 
-## Environment setup
+p2p.chat is a peer-to-peer video conferencing application. Think of it as an free and open source appear.in alternative.
+
+## Architecture
+
+p2p.chat uses WebRTC to power the all video/data communication between peers. Each p2p.chat room creates a unique WebRTC swarm, using [webrtc-swarm](https://github.com/mafintosh/webrtc-swarm). This means all peers communicate to all other peers directly, without the need to pass data between any kind of centralized server. This ensures that all video data is end-to-end encrypted.
+
+A [signalhub](https://github.com/mafintosh/signalhub) is used as a signalling server to initially connect the peers together.
+
+## Development
+
+### Environment setup
 
 ```sh
   $ npm install
 ```
 
-## Development
+### Running
 
 Start the Webpack server (includes live reloading when you change files):
 
@@ -16,7 +26,7 @@ Start the Webpack server (includes live reloading when you change files):
 
 Open [http://localhost:3001](http://localhost:3001) in a browser.
 
-## Bundling
+### Bundling
 
 ```sh
   $ npm run bundle
