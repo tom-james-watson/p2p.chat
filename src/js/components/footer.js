@@ -8,8 +8,8 @@ export default (props) => {
       <div className='container'>
         <div className='row'>
           <h5>Contact</h5>
-          <p>For any help or feedback, please contact us at <a href='mailto:support@p2p.chat'>support@p2p.chat</a>.</p>
-          <p>For press, or any other queries, please contact <a href='mailto:tom@tomjwatson.com'>tom@tomjwatson.com</a>.</p>
+          <p>For any help or feedback, please contact <a href='mailto:support@p2p.chat'>support@p2p.chat</a>.</p>
+          <p>For press, or any other queries, please get in touch at <a href='mailto:tom@tomjwatson.com'>tom@tomjwatson.com</a>.</p>
         </div>
         <div className='row'>
           <h5>About</h5>
