@@ -81,6 +81,16 @@ export default class PeerStream extends React.Component {
       videoStyle.display = 'none'
     }
 
+    let peerStreamURL
+
+    if (peerStream.stream && (peerStream.videoOn || peerStream.audioOn)) {
+      try {
+        peerStreamURL = URL.createObjectURL(peerStream.stream)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
     return (
       <div className='peer-stream'>
         <div className='stream-wrapper'>
@@ -93,21 +103,21 @@ export default class PeerStream extends React.Component {
             }
           </div>
           {
-            (peerStream.connected && (!peerStream.stream || !peerStream.videoOn)) ? (
+            (peerStream.connected && (!peerStreamURL || !peerStream.videoOn)) ? (
               <div className='peer-no-video' style={noVideoStyle}><User /></div>
             ) : null
           }
-          {peerStream.stream && (peerStream.videoOn) ? (
+          {peerStreamURL && (peerStream.videoOn) ? (
             <video
               ref={(video) => {this.video = video}}
-              src={URL.createObjectURL(peerStream.stream)}
+              src={}
               style={videoStyle}
               autoPlay
             />
           ) : null}
-          {peerStream.stream && (!peerStream.videoOn && peerStream.audioOn) ? (
+          {peerStreamURL && (!peerStream.videoOn && peerStream.audioOn) ? (
             <audio
-              src={URL.createObjectURL(peerStream.stream)}
+              src={URL.createObjectURL(peerStreamURL)}
               style={videoStyle}
               autoPlay
             />

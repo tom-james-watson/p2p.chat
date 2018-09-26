@@ -14,7 +14,17 @@ export default class MyVideo extends React.Component {
 
     const {stream, videoOn, videoEnabled} = this.props
 
+    let streamURL
+
     if (videoEnabled && videoOn) {
+      try {
+        streamURL = URL.createObjectURL(stream)
+      } catch(err) {
+        console.error(err)
+      }
+    }
+
+    if (streamURL) {
       return (
         <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
       )
