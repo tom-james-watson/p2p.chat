@@ -19,8 +19,15 @@ export default class MyVideo extends React.Component {
   updateSrcObject() {
     const {stream, videoOn, videoEnabled} = this.props
 
+    console.log({videoOn, videoEnabled})
+
     if (this.streamEle && videoOn && videoEnabled) {
-      this.streamEle.srcObject = this.props.stream
+      if ('srcObject' in this.streamEle) {
+        this.streamEle.srcObject = stream
+      } else {
+        // Older browsers don't support srcObject
+        this.streamEle.src = URL.createObjectURL(stream)
+      }
     }
   }
 

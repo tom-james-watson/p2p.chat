@@ -15,7 +15,6 @@ async function getMediaStream(opts) {
 export default async function getMyStream() {
 
   const video = {
-    facingMode: 'user',
     mandatory: {
       maxWidth: 640,
       maxHeight: 480,
