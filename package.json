@@ -1,6 +1,6 @@
 {
   "name": "p2p.chat",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "P2P Video Chat",
   "main": "webpack.config.js",
   "scripts": {
