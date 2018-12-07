@@ -90,6 +90,7 @@ export default class PeerStream extends React.Component {
         console.error(err)
       }
     }
+    console.log({peerStreamURL})
 
     return (
       <div className='peer-stream'>
@@ -110,7 +111,7 @@ export default class PeerStream extends React.Component {
           {peerStreamURL && (peerStream.videoOn) ? (
             <video
               ref={(video) => {this.video = video}}
-              src={}
+              src={URL.createObjectURL(peerStreamURL)}
               style={videoStyle}
               autoPlay
             />
