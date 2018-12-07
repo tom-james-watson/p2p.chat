@@ -47,6 +47,7 @@ export default class Chat extends React.Component {
   async handleRequestPerms() {
 
     const {myStream, audioEnabled, videoEnabled} = await getMyStream()
+    console.log({audioEnabled, videoEnabled})
     this.setState({initialized: true, myStream, audioEnabled, videoEnabled})
 
   }

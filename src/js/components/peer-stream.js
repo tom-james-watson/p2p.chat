@@ -39,13 +39,19 @@ export default class PeerStream extends React.Component {
   updateSrcObject() {
     const {peerStream} = this.props
 
+    console.log({videoOn: peerStream.videoOn, audioOn: peerStream.audioOn, streamEle: this.streamEle, stream: peerStream.stream})
+
     if (
       this.streamEle &&
       peerStream.stream &&
       (peerStream.videoOn || peerStream.audioOn)
     ) {
-      console.log('Setting to', {stream: peerStream.stream})
-      this.streamEle.srcObject = peerStream.stream
+      if ('srcObject' in this.streamEle) {
+        this.streamEle.srcObject = peerStream.stream
+      } else {
+        // Older browsers don't support srcObject
+        this.streamEle.src = URL.createObjectURL(peerStream.stream)
+      }
     }
   }
 
@@ -113,15 +119,15 @@ export default class PeerStream extends React.Component {
           {peerStream.videoOn ? (
             <video
               ref={ele => {this.streamEle = ele}}
-              style={videoStyle}
               autoPlay
+              style={videoStyle}
             />
           ) : null}
           {(!peerStream.videoOn && peerStream.audioOn) ? (
             <audio
               style={videoStyle}
-              ref={ele => {this.streamEle = ele}}
               autoPlay
+              ref={ele => {this.streamEle = ele}}
             />
           ) : null}
           {
