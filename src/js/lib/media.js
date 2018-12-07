@@ -22,7 +22,12 @@ export default async function getMyStream() {
       maxFrameRate: 24,
     }
   }
-  const audio = true
+  const audio = {
+    autoGainControl: true,
+    sampleRate: {ideal: 48000, min: 35000},
+    echoCancellation: true,
+    channelCount: {ideal: 1},
+  }
 
   try {
     // Try and get video and audio
