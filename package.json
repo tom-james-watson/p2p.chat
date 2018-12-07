@@ -1,6 +1,6 @@
 {
   "name": "p2p.chat",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "P2P Video Chat",
   "main": "webpack.config.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "css-loader": "^0.28.7",
     "es6-promise": "^4.1.1",
     "extract-text-webpack-plugin": "^3.0.1",
-    "node-sass": "^4.5.3",
+    "node-sass": "^4.11.0",
     "postcss-loader": "^2.0.8",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
