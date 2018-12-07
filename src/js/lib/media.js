@@ -1,26 +1,21 @@
 import getMedia from 'getusermedia'
 
 async function getMediaStream(opts) {
-
   return new Promise(async (resolve, reject) => {
-
     getMedia(opts, function (err, stream) {
-
       if (err) {
         return reject(err)
       }
 
       resolve(stream)
-
     })
-
   })
-
 }
 
 export default async function getMyStream() {
 
   const video = {
+    facingMode: 'user',
     mandatory: {
       maxWidth: 640,
       maxHeight: 480,
@@ -31,35 +26,22 @@ export default async function getMyStream() {
   const audio = true
 
   try {
-
     // Try and get video and audio
     const stream = await getMediaStream({video, audio})
     return {myStream: stream, audioEnabled: true, videoEnabled: true}
-
-  } catch(e) {
-
+  } catch (e) {
     try {
-
       // If that fails, try just audio
       const stream = await getMediaStream({audio})
       return {myStream: stream, audioEnabled: true, videoEnabled: false}
-
-    } catch(e) {
-
+    } catch (err) {
       try {
-
         // If that fails, try just video
         const stream = await getMediaStream({video})
         return {myStream: stream, audioEnabled: false, videoEnabled: true}
-
-      } catch(e) {
-
+      } catch (e) {
         return {myStream: null, audioEnabled: false, videoEnabled: false}
-
       }
-
     }
-
   }
-
 }
