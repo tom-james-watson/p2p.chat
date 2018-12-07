@@ -23,9 +23,9 @@ export default async function getMyStream() {
     }
   }
   const audio = {
-    autoGainControl: false,
+    autoGainControl: true,
     sampleRate: {ideal: 48000, min: 35000},
-    echoCancellation: false,
+    echoCancellation: true,
     channelCount: {ideal: 1},
     volume: 1
   }
