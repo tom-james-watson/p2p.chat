@@ -16,10 +16,10 @@ export default async function getMyStream() {
 
   const video = {
     mandatory: {
-      maxWidth: 640,
-      maxHeight: 480,
+      width: {min: 640, ideal: 1280, max: 1920},
+      height: {min: 360, ideal: 720, max: 1080},
       maxAspectRatio: 4/3,
-      maxFrameRate: 24,
+      frameRate: {ideal: 15, max: 24},
     }
   }
   const audio = {
