@@ -1,6 +1,4 @@
 import React from 'react'
-import classNames from 'classnames'
-import AwaitingPeers from './awaiting-peers'
 import {MicOff, User} from 'react-feather'
 import LoadingIndicator from './loading-indicator'
 
