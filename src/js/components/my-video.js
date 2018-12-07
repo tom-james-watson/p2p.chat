@@ -5,28 +5,32 @@ import {User} from 'react-feather'
 export default class MyVideo extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-
     return shallowCompare(this, nextProps, nextState);
+  }
 
+  componentDidMount() {
+    this.updateSrcObject()
+  }
+
+  componentDidUpdate() {
+    this.updateSrcObject()
+  }
+
+  updateSrcObject() {
+    const {stream, videoOn, videoEnabled} = this.props
+
+    if (this.streamEle && videoOn && videoEnabled) {
+      this.streamEle.srcObject = this.props.stream
+    }
   }
 
   render() {
 
     const {stream, videoOn, videoEnabled} = this.props
 
-    let streamURL
-
     if (videoEnabled && videoOn) {
-      try {
-        streamURL = URL.createObjectURL(stream)
-      } catch(err) {
-        console.error(err)
-      }
-    }
-
-    if (streamURL) {
       return (
-        <video id='my-video' src={URL.createObjectURL(stream)} autoPlay muted />
+        <video ref={ele => {this.streamEle = ele}} id='my-video' autoPlay muted />
       )
     } else {
       return (

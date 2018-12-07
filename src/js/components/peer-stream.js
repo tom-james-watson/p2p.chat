@@ -7,33 +7,48 @@ import LoadingIndicator from './loading-indicator'
 export default class PeerStream extends React.Component {
 
   constructor(props) {
-
     super(props)
 
     this.state = {
       videoWidth: null,
       videoHeight: null
     }
+  }
 
+  componentDidMount() {
+    this.updateSrcObject()
   }
 
   componentDidUpdate() {
-
-    if (!this.video) {
+    if (!this.streamEle) {
       return
     }
 
-    this.video.onloadedmetadata = () => {
+    this.streamEle.onloadedmetadata = () => {
       if (this.state.videoWidth !== null || this.state.videoHeight !== null) {
         return
       }
       this.setState({
-        videoWidth: this.video.videoWidth,
-        videoHeight: this.video.videoHeight,
+        videoWidth: this.streamEle.videoWidth,
+        videoHeight: this.streamEle.videoHeight,
         videoReady: true
       })
     }
 
+    this.updateSrcObject()
+  }
+
+  updateSrcObject() {
+    const {peerStream} = this.props
+
+    if (
+      this.streamEle &&
+      peerStream.stream &&
+      (peerStream.videoOn || peerStream.audioOn)
+    ) {
+      console.log('Setting to', {stream: peerStream.stream})
+      this.streamEle.srcObject = peerStream.stream
+    }
   }
 
   render() {
@@ -81,16 +96,6 @@ export default class PeerStream extends React.Component {
       videoStyle.display = 'none'
     }
 
-    let peerStreamURL
-
-    if (peerStream.stream && (peerStream.videoOn || peerStream.audioOn)) {
-      try {
-        peerStreamURL = URL.createObjectURL(peerStream.stream)
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
     return (
       <div className='peer-stream'>
         <div className='stream-wrapper'>
@@ -103,22 +108,21 @@ export default class PeerStream extends React.Component {
             }
           </div>
           {
-            (peerStream.connected && (!peerStreamURL || !peerStream.videoOn)) ? (
+            (peerStream.connected && !peerStream.videoOn) ? (
               <div className='peer-no-video' style={noVideoStyle}><User /></div>
             ) : null
           }
-          {peerStreamURL && (peerStream.videoOn) ? (
+          {peerStream.videoOn ? (
             <video
-              ref={(video) => {this.video = video}}
-              src={}
+              ref={ele => {this.streamEle = ele}}
               style={videoStyle}
               autoPlay
             />
           ) : null}
-          {peerStreamURL && (!peerStream.videoOn && peerStream.audioOn) ? (
+          {(!peerStream.videoOn && peerStream.audioOn) ? (
             <audio
-              src={URL.createObjectURL(peerStreamURL)}
               style={videoStyle}
+              ref={ele => {this.streamEle = ele}}
               autoPlay
             />
           ) : null}
