@@ -5,7 +5,7 @@ import {User} from 'react-feather'
 export default class MyVideo extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+    return shallowCompare(this, nextProps, nextState)
   }
 
   componentDidMount() {
