@@ -15,7 +15,6 @@ export default async function getMyStream() {
     sampleRate: {ideal: 48000, min: 35000},
     echoCancellation: true,
     channelCount: {ideal: 1},
-    volume: 1
   }
 
   try {
