@@ -8,13 +8,16 @@ export default async function getMyStream() {
     facingMode: "user",
     width: {min: 640, ideal: 1280, max: 1920},
     height: {min: 360, ideal: 720, max: 1080},
+    maxAspectRatio: 4/3,
     frameRate: {ideal: 15, max: 24},
   }
   const audio = {
-    autoGainControl: true,
-    sampleRate: {ideal: 48000, min: 35000},
-    echoCancellation: true,
+    autoGainControl: false,
     channelCount: {ideal: 1},
+    echoCancellation: false,
+    googAutoGainControl: false,
+    noiseSuppression: true,
+    sampleRate: {ideal: 48000, min: 35000},
   }
 
   try {
