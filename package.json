@@ -4,9 +4,8 @@
   "description": "P2P Video Chat",
   "main": "webpack.config.js",
   "scripts": {
-    "start": "./node_modules/.bin/webpack-dev-server --config webpack.config.js --port 3001 --hot --inline --history-api-fallback",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "NODE_ENV=production ./node_modules/.bin/webpack --config webpack.config.js"
+    "start": "webpack-dev-server --config webpack.config.js --port 3001 --hot --inline --history-api-fallback",
+    "bundle": "NODE_ENV=production webpack --config webpack.config.js"
   },
   "author": "Tom Watson <tom@tomjwatson.com>",
   "license": "MIT",
@@ -27,11 +26,11 @@
     "css-loader": "^3.2.0",
     "es6-promise": "^4.1.1",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^5.0.0",
     "postcss-loader": "^2.0.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "sass-loader": "^6.0.6",
+    "sass-loader": "^10.1.1",
     "style-loader": "^0.19.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
@@ -53,7 +52,7 @@
     "react-feather": "^1.1.0",
     "shorthash": "0.0.2",
     "signalhub": "^4.9.0",
-    "uglifyjs-webpack-plugin": "^1.0.1",
+    "uglifyjs-webpack-plugin": "^1.1.2",
     "uuid": "^3.2.1",
     "webrtc-swarm": "github:tom-james-watson/webrtc-swarm"
   }
