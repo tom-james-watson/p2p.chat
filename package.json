@@ -49,7 +49,7 @@
     "eslint-config-tomjwatson": "^0.1.0",
     "media-recorder-stream": "^2.1.1",
     "query-string": "^6.0.0",
-    "react-addons-shallow-compare": "^15.6.2",
+    "react-addons-shallow-compare": "^15.6.3",
     "react-feather": "^1.1.0",
     "shorthash": "0.0.2",
     "signalhub": "^4.9.0",
