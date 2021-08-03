@@ -214,7 +214,8 @@ export default () => {
 
         <p>
           Your submission of personal information through the store is governed
-          by our Privacy Policy. To view our Privacy Policy.
+          by our Privacy Policy. To view our Privacy Policy, visit
+          https://p2p.chat/privacy-policy.
         </p>
 
         <h3>SECTION 9 - ERRORS, INACCURACIES AND OMISSIONS</h3>
