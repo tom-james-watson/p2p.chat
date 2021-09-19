@@ -13,7 +13,7 @@ export default (props) => {
           </p>
           <p>
             For press, or any other queries, please get in touch at{" "}
-            <a href="mailto:tom@tomjwatson.com">tom@tomjwatson.com</a>.
+            <a href="mailto:p2pchat@tomjwatson.com">p2pchat@tomjwatson.com</a>.
           </p>
         </div>
         <div className="row">
