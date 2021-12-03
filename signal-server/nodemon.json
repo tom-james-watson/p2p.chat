@@ -1,0 +1,5 @@
+{
+  "watch": ["src/**"],
+  "ext": "ts",
+  "exec": "NODE_ENV=development ts-node ./src/index.ts"
+}

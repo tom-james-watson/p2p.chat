@@ -1,0 +1,27 @@
+{
+  "name": "p2p.chat-signal",
+  "private": true,
+  "version": "0.3.0",
+  "description": "Peer-to-peer video chat",
+  "author": "Tom Watson <p2pchat@tomjwatson.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tom-james-watson/p2p.chat.git"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "nodemon",
+    "start": "node dist/index.js",
+    "test": "npm t"
+  },
+  "dependencies": {
+    "socket.io": "^4.4.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.2.1",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0"
+  }
+}
