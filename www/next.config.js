@@ -1,2 +1,3 @@
-const withTM = require("next-transpile-modules")(["react-github-btn"]);
-module.exports = withTM();
+const nextTranspileModules = require("next-transpile-modules");
+
+module.exports = nextTranspileModules(["react-github-btn"]);

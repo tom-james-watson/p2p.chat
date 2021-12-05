@@ -5,9 +5,8 @@
   },
   extends: [
     "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
+    "next",
+    "plugin:@typescript-eslint/recommended"
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -17,7 +16,16 @@
     ecmaVersion: 12,
     sourceType: "module",
   },
-  plugins: ["react", "@typescript-eslint"],
+  plugins: ["@typescript-eslint"],
+  overrides: [
+    {
+      files: ["*.js"],
+      rules: {
+        "@typescript-eslint/no-require-imports": 0,
+        "@typescript-eslint/no-var-requires": 0,
+      },
+    },
+  ],
   rules: {
     "@typescript-eslint/explicit-module-boundary-types": 0
   },

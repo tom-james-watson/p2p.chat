@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "typeRoots": ["@types", "node_modules/@types"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["esnext"],
+    "module": "CommonJS",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es5"
+  },
+  "include": ["src/**/*.ts"],
+  "references": [{ "path": "../lib" }]
+}

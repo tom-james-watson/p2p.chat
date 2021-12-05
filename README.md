@@ -1,12 +1,6 @@
 # p2p.chat
 
----
-
-⚠️ **Currently Unmaintained** ⚠️ This was a hobby project that has not been worked on for some time. I would like to pick this up again in the future and overhaul how the app is architected, specifically peer discovery. I advise using https://meet.jit.si if you are looking for open source, professional video conferencing.
-
----
-
-p2p.chat is a peer-to-peer video conferencing application. Think of it as an free and open source appear.in alternative.
+p2p.chat is a peer-to-peer video conferencing application. Think of it as an free and open source Zoom alternative.
 
 ## Architecture
 

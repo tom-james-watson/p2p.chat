@@ -1,10 +1,14 @@
 import React from "react";
-import Home from "../components/home";
+import Footer from "../components/footer";
+import Features from "../components/home/features";
+import Hero from "../components/home/hero";
 
-export default function Index() {
+export default function Home() {
   return (
-    <>
-      <Home />
-    </>
+    <React.Fragment>
+      <Hero />
+      <Features />
+      <Footer />
+    </React.Fragment>
   );
 }

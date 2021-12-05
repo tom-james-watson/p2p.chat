@@ -1,21 +1,17 @@
 import React from "react";
-import { PlusCircleIcon } from "@heroicons/react/outline";
 import GitHubButton from "react-github-btn";
-import Button from "../lib/button";
+import CreateRoom from "./create-room";
 
 export default function Hero() {
   return (
-    <div className="hero min-h-700 py-32 p-4 text-center">
-      <h1 className="text-5xl font-medium mb-4">No-nonsense video calls.</h1>
-      <h3 className="text-2xl mb-16">No logins. No tracking. Free forever.</h3>
-      <div className="flex flex-row space-x-2 mb-16 justify-center">
-        <input
-          type="text"
-          placeholder="e.g. engineering standup"
-          className="rounded p-2 text-black w-56"
-        />
-        <Button text="Create room" icon={<PlusCircleIcon width={24} />} />
-      </div>
+    <div className="hero py-32 p-4 text-center">
+      <h1 className="text-5xl font-bold mb-4">
+        <span className="">p2p</span>
+        <span className="text-yellow-400 mx-0.5">.</span>
+        <span className="">chat</span>
+      </h1>
+      <h3 className="text-2xl mb-16">No logins. No tracking. No nonsense.</h3>
+      <CreateRoom />
       <div>
         <GitHubButton
           href="https://github.com/tom-james-watson/breaktimer-app"

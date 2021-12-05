@@ -1,14 +1,10 @@
 {
-  "name": "p2p.chat-signal",
+  "name": "@p2p.chat/signalling",
   "private": true,
-  "version": "0.3.0",
-  "description": "Peer-to-peer video chat",
+  "version": "0.1.0",
+  "description": "Signalling server for p2p.chat",
   "author": "Tom Watson <p2pchat@tomjwatson.com>",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/tom-james-watson/p2p.chat.git"
-  },
   "scripts": {
     "build": "tsc --build",
     "dev": "nodemon",

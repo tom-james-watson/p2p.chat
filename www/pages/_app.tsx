@@ -5,10 +5,10 @@ import "../styles/globals.scss";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <div className="bg-gray-800 w-screen h-screen text-white">
+    <div className="w-screen h-screen text-white">
       <Head>
         <title>p2p.chat</title>
-        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="icon" type="image/png" href="/favicon.svg" />
       </Head>
       <Component {...pageProps} />
     </div>

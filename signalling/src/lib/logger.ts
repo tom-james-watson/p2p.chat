@@ -15,3 +15,5 @@ export const createConsoleLogger = (): Logger => {
     ),
   });
 };
+
+export { Logger };
