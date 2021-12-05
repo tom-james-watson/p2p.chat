@@ -3,17 +3,9 @@ import { io, Socket } from "socket.io-client";
 import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
 import Container from "../../components/container";
 import { useRouter } from "next/router";
-import { validateRoom } from "../../lib/room";
-
-const iceServers = {
-  iceServers: [
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
-    { urls: "stun:stun2.l.google.com:19302" },
-    { urls: "stun:stun3.l.google.com:19302" },
-    { urls: "stun:stun4.l.google.com:19302" },
-  ],
-};
+import { validateRoom } from "../../lib/room-encoding";
+import { createPeerConnection } from "../../lib/webrtc";
+import { createLocalStream } from "../../lib/stream";
 
 export default function Room() {
   const router = useRouter();
@@ -26,45 +18,59 @@ export default function Room() {
   console.log({ created });
 
   React.useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
-    validateRoom(roomCode, roomName);
-
-    const socket: Socket<ServerEvents, ClientEvents> = io(
-      "http://localhost:8080"
-    );
-
-    socket.on("connected", () => {
-      socket.emit("joinRoom", roomCode);
-    });
-
-    socket.on("peerConnect", async (sid) => {
-      console.log(`peerConnect sid=${sid}`);
-
-      let sessionDescription;
-      try {
-        const rtcPeerConnection = new RTCPeerConnection(iceServers);
-        // addLocalTracks(rtcPeerConnection);
-        // rtcPeerConnection.ontrack = setRemoteStream;
-        // rtcPeerConnection.onicecandidate = sendIceCandidate;
-        sessionDescription = await rtcPeerConnection.createOffer();
-        rtcPeerConnection.setLocalDescription(sessionDescription);
-      } catch (error) {
-        console.error(error);
+    (async () => {
+      if (!router.isReady) {
+        return;
       }
 
-      socket.emit("webrtc_offer", {
-        type: "webrtc_offer",
-        sdp: sessionDescription,
-        roomId,
-      });
-    });
+      const localStream = await createLocalStream();
 
-    socket.on("peerDisconnect", (sid) => {
-      console.log(`peerDisconnect sid=${sid}`);
-    });
+      validateRoom(roomCode, roomName);
+
+      const socket: Socket<ServerEvents, ClientEvents> = io(
+        "http://localhost:8080"
+      );
+
+      socket.on("connected", () => {
+        socket.emit("joinRoom", roomCode);
+      });
+
+      socket.on("peerConnect", async (sid) => {
+        console.log(`peerConnect sid=${sid}`);
+
+        const peerConnection = createPeerConnection(localStream);
+        const offerSdp = await peerConnection.createOffer();
+        peerConnection.setLocalDescription(offerSdp);
+
+        socket.emit("webRtcOffer", { offerSdp, toSid: sid });
+      });
+
+      socket.on("peerDisconnect", (sid) => {
+        console.log(`peerDisconnect sid=${sid}`);
+      });
+
+      socket.on("webRtcAnswer", async ({ answerSdp, fromSid }) => {
+        // TODO:
+        // - need to store the peers in state so that we can access the peer here.
+        // - handle ice candidate logic on callbacks
+        // rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(foo))
+      });
+
+      socket.on("webRtcOffer", async ({ fromSid, offerSdp }) => {
+        const peerConnection = createPeerConnection(localStream);
+        peerConnection.setRemoteDescription(
+          new RTCSessionDescription(offerSdp)
+        );
+
+        const answerSdp = await peerConnection.createAnswer();
+        peerConnection.setLocalDescription(answerSdp);
+
+        socket.emit("webRtcAnswer", {
+          answerSdp,
+          toSid: fromSid,
+        });
+      });
+    })();
   }, [roomCode, roomName, router.isReady]);
 
   return (

@@ -2,7 +2,7 @@ import React from "react";
 import { PlusCircleIcon } from "@heroicons/react/outline";
 import Button from "../lib/button";
 import { cleanSlug, slugify } from "../../lib/slug";
-import { createRoomCode, randomRoomName } from "../../lib/room";
+import { createRoomCode, randomRoomName } from "../../lib/room-encoding";
 import { useRouter } from "next/router";
 
 export default function CreateRoom() {

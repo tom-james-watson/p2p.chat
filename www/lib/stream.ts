@@ -1,0 +1,58 @@
+export interface Stream {
+  stream: MediaStream | null;
+  audio: {
+    enabled: boolean;
+  };
+  video: {
+    enabled: boolean;
+  };
+}
+
+async function getMediaStream(
+  constraints: MediaStreamConstraints
+): Promise<MediaStream> {
+  return navigator.mediaDevices.getUserMedia(constraints);
+}
+
+export const createLocalStream = async (): Promise<Stream> => {
+  const video = {
+    facingMode: "user",
+    width: { min: 640, ideal: 1280, max: 1920 },
+    height: { min: 360, ideal: 720, max: 1080 },
+    frameRate: { ideal: 15, max: 24 },
+  };
+  const audio = {
+    autoGainControl: true,
+    sampleRate: { ideal: 48000, min: 35000 },
+    echoCancellation: true,
+    channelCount: { ideal: 1 },
+  };
+
+  try {
+    // Try and get video and audio
+    const stream = await getMediaStream({ video, audio });
+    return { stream, audio: { enabled: true }, video: { enabled: true } };
+  } catch (err) {
+    console.error(err);
+    try {
+      // Try just audio
+      const stream = await getMediaStream({ audio });
+      return { stream, audio: { enabled: true }, video: { enabled: false } };
+    } catch (err) {
+      console.error(err);
+      try {
+        // Try just video
+        const stream = await getMediaStream({ video });
+        return { stream, audio: { enabled: false }, video: { enabled: true } };
+      } catch (err) {
+        console.error(err);
+        // No stream
+        return {
+          stream: null,
+          audio: { enabled: false },
+          video: { enabled: false },
+        };
+      }
+    }
+  }
+};
