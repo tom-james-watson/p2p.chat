@@ -1,4 +1,6 @@
-import { atom } from "recoil";
+import { atom, SetterOrUpdater } from "recoil";
+
+export type SetPeers = SetterOrUpdater<Peer[]>;
 
 export type Peer = {
   sid: string;
