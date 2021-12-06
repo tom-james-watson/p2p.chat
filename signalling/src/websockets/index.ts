@@ -3,6 +3,7 @@ import {
   ClientEvents,
   ServerEvents,
   WebRtcAnswer,
+  WebRtcIceCandidate,
   WebRtcOffer,
 } from "../../../lib/src/types/websockets";
 import { Logger } from "../lib/logger";
@@ -17,22 +18,32 @@ const onJoinRoom = (logger: Logger, socket: Socket) => (room: string) => {
 
 const onWebRtcAnswer =
   (logger: Logger, server: Server, socket: Socket) =>
-  ({ answerSdp, toSid }: WebRtcAnswer) => {
-    logger.info(`webRtcAnswer fromSid=${socket.id} toSid=${toSid} room`);
+  ({ answerSdp, sid }: WebRtcAnswer) => {
+    logger.info(`webRtcAnswer fromSid=${socket.id} toSid=${sid}`);
 
     server.sockets.sockets
-      .get(toSid)
-      ?.emit("webRtcAnswer", { answerSdp, fromSid: socket.id });
+      .get(sid)
+      ?.emit("webRtcAnswer", { answerSdp, sid: socket.id });
+  };
+
+const onWebRtcIceCandidate =
+  (logger: Logger, server: Server, socket: Socket) =>
+  ({ candidate, label, sid }: WebRtcIceCandidate) => {
+    logger.info(`webRtcIceCandidate fromSid=${socket.id} toSid=${sid}`);
+
+    server.sockets.sockets
+      .get(sid)
+      ?.emit("webRtcIceCandidate", { candidate, label, sid: socket.id });
   };
 
 const onWebRtcOffer =
   (logger: Logger, server: Server, socket: Socket) =>
-  ({ offerSdp, toSid }: WebRtcOffer) => {
-    logger.info(`webRtcOffer fromSid=${socket.id} toSid=${toSid} room`);
+  ({ offerSdp, sid }: WebRtcOffer) => {
+    logger.info(`webRtcOffer fromSid=${socket.id} toSid=${sid}`);
 
     server.sockets.sockets
-      .get(toSid)
-      ?.emit("webRtcOffer", { fromSid: socket.id, offerSdp });
+      .get(sid)
+      ?.emit("webRtcOffer", { sid: socket.id, offerSdp });
   };
 
 const onDisconnect = (logger: Logger, socket: Socket) => (reason: string) => {
@@ -50,6 +61,7 @@ const onConnection = (logger: Logger, server: Server) => (socket: Socket) => {
   socket.on("joinRoom", onJoinRoom(logger, socket));
   socket.on("disconnecting", onDisconnect(logger, socket));
   socket.on("webRtcAnswer", onWebRtcAnswer(logger, server, socket));
+  socket.on("webRtcIceCandidate", onWebRtcIceCandidate(logger, server, socket));
   socket.on("webRtcOffer", onWebRtcOffer(logger, server, socket));
 };
 

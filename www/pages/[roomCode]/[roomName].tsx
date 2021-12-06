@@ -1,11 +1,13 @@
 import React from "react";
+import { useSetRecoilState } from "recoil";
+import { useRouter } from "next/router";
 import { io, Socket } from "socket.io-client";
 import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
 import Container from "../../components/container";
-import { useRouter } from "next/router";
-import { validateRoom } from "../../lib/room-encoding";
-import { createPeerConnection } from "../../lib/webrtc";
-import { createLocalStream } from "../../lib/stream";
+import { validateRoom } from "../../lib/rooms/room-encoding";
+import { createRtcPeerConnection } from "../../lib/mesh/webrtc";
+import { createLocalStream } from "../../lib/mesh/stream";
+import { peersState } from "../../atoms/peers";
 
 export default function Room() {
   const router = useRouter();
@@ -13,6 +15,8 @@ export default function Room() {
   const roomCode = router.query.roomCode as string;
   const roomName = router.query.roomName as string;
   const created = router.query.created === "true";
+
+  const setPeers = useSetRecoilState(peersState);
 
   // TODO - remove?
   console.log({ created });
@@ -38,40 +42,84 @@ export default function Room() {
       socket.on("peerConnect", async (sid) => {
         console.log(`peerConnect sid=${sid}`);
 
-        const peerConnection = createPeerConnection(localStream);
-        const offerSdp = await peerConnection.createOffer();
-        peerConnection.setLocalDescription(offerSdp);
+        const rtcPeerConnection = createRtcPeerConnection(
+          socket,
+          localStream,
+          sid,
+          setPeers
+        );
+        const offerSdp = await rtcPeerConnection.createOffer();
+        rtcPeerConnection.setLocalDescription(offerSdp);
 
-        socket.emit("webRtcOffer", { offerSdp, toSid: sid });
+        setPeers((peers) => {
+          return [...peers, { rtcPeerConnection, sid, status: "connecting" }];
+        });
+
+        socket.emit("webRtcOffer", { offerSdp, sid });
       });
 
       socket.on("peerDisconnect", (sid) => {
         console.log(`peerDisconnect sid=${sid}`);
       });
 
-      socket.on("webRtcAnswer", async ({ answerSdp, fromSid }) => {
-        // TODO:
-        // - need to store the peers in state so that we can access the peer here.
-        // - handle ice candidate logic on callbacks
-        // rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(foo))
+      socket.on("webRtcAnswer", async ({ answerSdp, sid }) => {
+        setPeers((peers) => {
+          return peers.map((peer) => {
+            if (peer.sid !== sid) {
+              return peer;
+            }
+
+            const rtcPeerConnection = peer.rtcPeerConnection;
+            rtcPeerConnection.setRemoteDescription(
+              new RTCSessionDescription(answerSdp)
+            );
+
+            return { ...peer, rtcPeerConnection };
+          });
+        });
       });
 
-      socket.on("webRtcOffer", async ({ fromSid, offerSdp }) => {
-        const peerConnection = createPeerConnection(localStream);
-        peerConnection.setRemoteDescription(
+      socket.on("webRtcIceCandidate", async ({ candidate, label, sid }) => {
+        setPeers((peers) => {
+          return peers.map((peer) => {
+            if (peer.sid !== sid) {
+              return peer;
+            }
+
+            const rtcPeerConnection = peer.rtcPeerConnection;
+            rtcPeerConnection.addIceCandidate(
+              new RTCIceCandidate({
+                sdpMLineIndex: label,
+                candidate: candidate,
+              })
+            );
+
+            return { ...peer, rtcPeerConnection };
+          });
+        });
+      });
+
+      socket.on("webRtcOffer", async ({ offerSdp, sid }) => {
+        const rtcPeerConnection = createRtcPeerConnection(
+          socket,
+          localStream,
+          sid,
+          setPeers
+        );
+        rtcPeerConnection.setRemoteDescription(
           new RTCSessionDescription(offerSdp)
         );
 
-        const answerSdp = await peerConnection.createAnswer();
-        peerConnection.setLocalDescription(answerSdp);
+        const answerSdp = await rtcPeerConnection.createAnswer();
+        rtcPeerConnection.setLocalDescription(answerSdp);
 
         socket.emit("webRtcAnswer", {
           answerSdp,
-          toSid: fromSid,
+          sid,
         });
       });
     })();
-  }, [roomCode, roomName, router.isReady]);
+  }, [roomCode, roomName, router.isReady, setPeers]);
 
   return (
     <Container>
