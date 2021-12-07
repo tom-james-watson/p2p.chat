@@ -4,6 +4,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: List
+        run: ls -lR
       - name: Install signalling deps
         run: cd signalling && npm i
       - name: Lint signalling
