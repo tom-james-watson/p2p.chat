@@ -8,13 +8,14 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "eslint --max-warnings=0 --cache --ext .js,.ts,.tsx .",
-    "lint-fix": "eslint --fix --cache --ext .js,.ts,.tsx .",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css,scss,json,yml}\"",
+    "lint": "eslint --max-warnings=0 --cache --ext .js,.ts,.tsx . && prettier --check \"**/*.{js,ts,tsx,css,scss,json,yml}\"",
     "start": "next start"
   },
   "dependencies": {
     "@heroicons/react": "^1.0.5",
     "next": "^12.0.4",
+    "prettier": "^2.5.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-github-btn": "^1.2.1",

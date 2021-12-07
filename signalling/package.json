@@ -8,6 +8,8 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "nodemon",
+    "format": "prettier --write \"**/*.{js,ts,json,yml}\"",
+    "lint": "eslint --max-warnings=0 --cache --ext .js,.ts . && prettier --check \"**/*.{js,ts,json,yml}\"",
     "start": "node dist/index.js",
     "test": "npm t"
   },
@@ -17,7 +19,11 @@
   },
   "devDependencies": {
     "@types/ws": "^8.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "eslint": "^7.24.0",
     "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
     "ts-node": "^10.4.0"
   }
 }

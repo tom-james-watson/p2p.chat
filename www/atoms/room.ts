@@ -7,6 +7,10 @@ export type Room =
       status: "initializing";
     }
   | {
+      status: "error";
+      error: string;
+    }
+  | {
       status: "connecting";
       name: string;
     }

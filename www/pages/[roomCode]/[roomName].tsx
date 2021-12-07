@@ -28,11 +28,14 @@ export default function Room() {
       const roomCode = router.query.roomCode as string;
       const roomName = router.query.roomName as string;
 
-      // TODO - do something with errors here
-      validateRoom(roomCode, roomName);
+      try {
+        validateRoom(roomCode, roomName);
+      } catch (err) {
+        setRoom({ status: "error", error: "Invalid room" });
+        return;
+      }
 
       setRoom({ status: "connecting", name: roomName });
-
       createSocket(roomCode, setRoom, setPeers);
     })();
   }, [
@@ -48,6 +51,7 @@ export default function Room() {
       {room.status === "initializing" && (
         <Loader type="Oval" color="#006699" height={60} width={60} />
       )}
+      {room.status === "error" && <p>{room.error}</p>}
       {room.status === "connecting" && <p>Connecting to ${room.name}</p>}
       {room.status === "connected" && (
         <>
