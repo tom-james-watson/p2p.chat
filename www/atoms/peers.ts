@@ -5,13 +5,13 @@ export type SetPeers = SetterOrUpdater<Peer[]>;
 export type Peer = {
   sid: string;
   rtcPeerConnection: RTCPeerConnection;
+  streams: readonly MediaStream[];
 } & (
   | {
       status: "connecting";
     }
   | {
       status: "connected";
-      streams: readonly MediaStream[];
     }
 );
 

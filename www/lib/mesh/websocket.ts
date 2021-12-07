@@ -7,7 +7,7 @@ import {
   WebRtcOffer,
 } from "../../../lib/src/types/websockets";
 import { SetPeers } from "../../atoms/peers";
-import { SetRoom } from "../../atoms/room";
+import { SetLocal } from "../../atoms/local";
 import { createLocalStream, Stream } from "./stream";
 import { createRtcPeerConnection } from "./webrtc";
 
@@ -17,24 +17,27 @@ const addPeer = (
   setPeers: SetPeers
 ) => {
   setPeers((peers) => {
-    return [...peers, { rtcPeerConnection, sid, status: "connecting" }];
+    return [
+      ...peers,
+      { rtcPeerConnection, sid, status: "connecting", streams: [] },
+    ];
   });
 };
 
 type Socket = IOSocket<ServerEvents, ClientEvents>;
 
 const onConnected =
-  (socket: Socket, roomCode: string, setRoom: SetRoom) => () => {
+  (socket: Socket, roomCode: string, setLocal: SetLocal) => () => {
     console.debug(`connected`);
 
     socket.emit("joinRoom", roomCode);
 
-    setRoom((room) => {
-      if (room.status !== "connecting") {
+    setLocal((local) => {
+      if (local.status !== "connecting") {
         throw new Error("Room connected whilst in unexpected status");
       }
 
-      return { ...room, status: "connected" };
+      return { ...local, status: "connected" };
     });
   };
 
@@ -84,12 +87,12 @@ const onWebRtcOffer =
       sid,
       setPeers
     );
-    rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
-
-    const answerSdp = await rtcPeerConnection.createAnswer();
-    rtcPeerConnection.setLocalDescription(answerSdp);
 
     addPeer(sid, rtcPeerConnection, setPeers);
+
+    rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
+    const answerSdp = await rtcPeerConnection.createAnswer();
+    rtcPeerConnection.setLocalDescription(answerSdp);
 
     socket.emit("webRtcAnswer", {
       answerSdp,
@@ -103,7 +106,6 @@ const onWebRtcAnswer =
     console.debug(`webRtcAnswer fromSid=${socket.id} toSid=${sid}`);
 
     setPeers((peers) => {
-      console.log(2, { peers });
       return peers.map((peer) => {
         if (peer.sid !== sid) {
           return peer;
@@ -123,7 +125,6 @@ const onWebRtcIceCandidate =
   (setPeers: SetPeers) =>
   ({ candidate, label, sid }: WebRtcIceCandidate) => {
     setPeers((peers) => {
-      console.log(1, { peers });
       return peers.map((peer) => {
         if (peer.sid !== sid) {
           return peer;
@@ -144,14 +145,18 @@ const onWebRtcIceCandidate =
 
 export const createSocket = async (
   roomCode: string,
-  setRoom: SetRoom,
+  setLocal: SetLocal,
   setPeers: SetPeers
 ): Promise<void> => {
   const localStream = await createLocalStream();
+  setLocal((local) => {
+    return { ...local, stream: localStream, status: "connecting" };
+  });
 
-  const socket: Socket = io("http://localhost:8080");
+  // const socket: Socket = io("http://localhost:8080");
+  const socket: Socket = io("http://192.168.1.93:8080");
 
-  socket.on("connected", onConnected(socket, roomCode, setRoom));
+  socket.on("connected", onConnected(socket, roomCode, setLocal));
   socket.on("peerConnect", onPeerConnect(socket, localStream, setPeers));
   socket.on("peerDisconnect", onPeerDisconnect(setPeers));
   socket.on("webRtcOffer", onWebRtcOffer(socket, localStream, setPeers));

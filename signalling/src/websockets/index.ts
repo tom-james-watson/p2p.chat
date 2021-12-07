@@ -29,7 +29,7 @@ const onWebRtcAnswer =
 const onWebRtcIceCandidate =
   (logger: Logger, server: Server, socket: Socket) =>
   ({ candidate, label, sid }: WebRtcIceCandidate) => {
-    logger.info(`webRtcIceCandidate fromSid=${socket.id} toSid=${sid}`);
+    logger.debug(`webRtcIceCandidate fromSid=${socket.id} toSid=${sid}`);
 
     server.sockets.sockets
       .get(sid)
@@ -69,9 +69,7 @@ export const createServer = (logger: Logger): Server => {
   const server = new IOServer<ClientEvents, ServerEvents>({
     cors: {
       origin:
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
-          : "https://example.com",
+        process.env.NODE_ENV === "development" ? "*" : "https://example.com",
       methods: ["GET", "POST"],
     },
   });

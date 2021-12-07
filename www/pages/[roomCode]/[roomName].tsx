@@ -6,18 +6,17 @@ import Container from "../../components/container";
 import { validateRoom } from "../../lib/rooms/room-encoding";
 import { peersState } from "../../atoms/peers";
 import { createSocket } from "../../lib/mesh/websocket";
+import { localState } from "../../atoms/local";
+import Peers from "../../components/room/peers";
 import { roomState } from "../../atoms/room";
+import Local from "../../components/room/local";
 
 export default function Room() {
   const router = useRouter();
 
-  const created = router.query.created === "true";
-
   const [room, setRoom] = useRecoilState(roomState);
+  const setLocal = useSetRecoilState(localState);
   const setPeers = useSetRecoilState(peersState);
-
-  // TODO - remove?
-  console.log({ created });
 
   React.useEffect(() => {
     (async () => {
@@ -25,8 +24,12 @@ export default function Room() {
         return;
       }
 
+      const created = router.query.created === "true";
       const roomCode = router.query.roomCode as string;
       const roomName = router.query.roomName as string;
+
+      // TODO - either stop passing this or use it
+      console.log({ created });
 
       try {
         validateRoom(roomCode, roomName);
@@ -35,27 +38,28 @@ export default function Room() {
         return;
       }
 
-      setRoom({ status: "connecting", name: roomName });
-      createSocket(roomCode, setRoom, setPeers);
+      setRoom({ status: "ready", name: roomName });
+      createSocket(roomCode, setLocal, setPeers);
     })();
   }, [
     router.isReady,
     router.query.roomCode,
     router.query.roomName,
     setPeers,
-    setRoom,
+    setLocal,
   ]);
 
   return (
     <Container>
-      {room.status === "initializing" && (
+      {room.status === "loading" && (
         <Loader type="Oval" color="#006699" height={60} width={60} />
       )}
       {room.status === "error" && <p>{room.error}</p>}
-      {room.status === "connecting" && <p>Connecting to ${room.name}</p>}
-      {room.status === "connected" && (
+      {room.status === "ready" && (
         <>
           <p>Connected to ${room.name}</p>
+          <Local />
+          <Peers />
         </>
       )}
     </Container>

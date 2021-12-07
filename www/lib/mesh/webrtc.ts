@@ -1,7 +1,7 @@
 import { SetterOrUpdater } from "recoil";
 import { Socket } from "socket.io-client";
-import { ClientEvents, ServerEvents } from "../../lib/src/types/websockets";
-import { Peer } from "../atoms/peers";
+import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
+import { Peer } from "../../atoms/peers";
 import { Stream } from "./stream";
 
 const iceServers = {
@@ -28,13 +28,25 @@ export const createRtcPeerConnection = (
   });
 
   rtcPeerConnection.ontrack = (e) => {
+    console.debug("ontrack", e.streams.length);
     setPeers((peers) => {
-      return peers.map((peer) => {
+      if (
+        !peers.some((peer) => {
+          return peer.sid === sid;
+        })
+      ) {
+        throw new Error("no peer found for track");
+      }
+
+      return peers.map((peer): Peer => {
         if (peer.sid !== sid) {
           return peer;
         }
 
-        return { ...peer, streams: e.streams };
+        return {
+          ...peer,
+          streams: [...peer.streams, ...e.streams],
+        };
       });
     });
   };
@@ -44,6 +56,22 @@ export const createRtcPeerConnection = (
         sid,
         label: e.candidate.sdpMLineIndex,
         candidate: e.candidate.candidate,
+      });
+    }
+
+    if (
+      rtcPeerConnection.iceConnectionState === "connected" ||
+      rtcPeerConnection.iceConnectionState === "completed"
+    ) {
+      setPeers((peers) => {
+        return peers.map((peer): Peer => {
+          if (peer.sid !== sid) {
+            return peer;
+          }
+
+          console.debug(`peer fully connected ${peer.sid}`);
+          return { ...peer, status: "connected" };
+        });
       });
     }
   };
