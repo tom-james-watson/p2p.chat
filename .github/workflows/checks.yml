@@ -4,8 +4,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: List
-        run: ls -lR
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Install signalling deps
         run: cd signalling && npm i
       - name: Lint signalling
