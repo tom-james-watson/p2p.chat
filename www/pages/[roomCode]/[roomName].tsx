@@ -41,13 +41,7 @@ export default function Room() {
       setRoom({ status: "ready", name: roomName });
       createSocket(roomCode, setLocal, setPeers);
     })();
-  }, [
-    router.isReady,
-    router.query.roomCode,
-    router.query.roomName,
-    setPeers,
-    setLocal,
-  ]);
+  }, [router.isReady, router.query, setLocal, setPeers, setRoom]);
 
   return (
     <Container>
