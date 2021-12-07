@@ -9,8 +9,8 @@ jobs:
       - name: Install signalling deps
         run: cd signalling && npm i
       - name: Lint signalling
-        run: npm run lint
+        run: cd signalling && npm run lint
       - name: Install www deps
-        run: cd ../www && npm i
+        run: cd www && npm i
       - name: Lint www
-        run: npm run lint
+        run: cd www && npm run lint
