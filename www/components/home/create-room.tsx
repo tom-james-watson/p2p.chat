@@ -50,10 +50,7 @@ export default function CreateRoom() {
       <Button
         icon={<PlusCircleIcon width={24} />}
         text="Create room"
-        onClick={() => {
-          console.log("click");
-          submit();
-        }}
+        onClick={submit}
       />
     </form>
   );

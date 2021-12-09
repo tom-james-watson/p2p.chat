@@ -9,7 +9,7 @@ export default function Local() {
     <>
       <div>
         {local.status}
-        {local.status !== "initializing" && (
+        {(local.status === "connecting" || local.status === "connected") && (
           <video
             ref={(video) => {
               if (video === null) {

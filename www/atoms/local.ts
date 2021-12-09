@@ -5,20 +5,26 @@ export type SetLocal = SetterOrUpdater<Local>;
 
 export type Local =
   | {
-      status: "initializing";
+      status: "requestingName";
+    }
+  | {
+      status: "requestingPermissions";
+      name: string;
     }
   | {
       status: "connecting";
+      name: string;
       stream: Stream;
     }
   | {
       status: "connected";
+      name: string;
       stream: Stream;
     };
 
 export const localState = atom<Local>({
   key: "localState",
   default: {
-    status: "initializing",
+    status: "requestingName",
   },
 });

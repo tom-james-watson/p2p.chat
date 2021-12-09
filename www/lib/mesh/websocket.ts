@@ -8,7 +8,7 @@ import {
 } from "../../../lib/src/types/websockets";
 import { SetPeers } from "../../atoms/peers";
 import { SetLocal } from "../../atoms/local";
-import { createLocalStream, Stream } from "./stream";
+import { Stream } from "./stream";
 import { createRtcPeerConnection } from "./webrtc";
 
 const addPeer = (
@@ -145,14 +145,10 @@ const onWebRtcIceCandidate =
 
 export const createSocket = async (
   roomCode: string,
+  localStream: Stream,
   setLocal: SetLocal,
   setPeers: SetPeers
 ): Promise<void> => {
-  const localStream = await createLocalStream();
-  setLocal((local) => {
-    return { ...local, stream: localStream, status: "connecting" };
-  });
-
   // const socket: Socket = io("http://localhost:8080");
   const socket: Socket = io("http://192.168.1.93:8080");
 

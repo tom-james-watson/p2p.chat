@@ -26,6 +26,15 @@ export default function Footer() {
   return (
     <Container>
       <>
+        <FooterHeader title="About" />
+        <FooterParagraph>
+          p2p.chat is a free and open source project. Contributions or bug
+          reports are extremely welcome at{" "}
+          <Link external href="https://github.com/tom-james-watson/p2p.chat">
+            https://github.com/tom-james-watson/p2p.chat
+          </Link>
+          .
+        </FooterParagraph>
         <FooterHeader title="Contact" />
         <FooterParagraph>
           For any help or feedback, please contact{" "}
@@ -38,15 +47,6 @@ export default function Footer() {
           For press, or any other queries, please get in touch at{" "}
           <Link external href="mailto:p2pchat@tomjwatson.com">
             p2pchat@tomjwatson.com
-          </Link>
-          .
-        </FooterParagraph>
-        <FooterHeader title="About" />
-        <FooterParagraph>
-          p2p.chat is a free and open source project. Contributions or bug
-          reports are extremely welcome at{" "}
-          <Link external href="https://github.com/tom-james-watson/p2p.chat">
-            https://github.com/tom-james-watson/p2p.chat
           </Link>
           .
         </FooterParagraph>

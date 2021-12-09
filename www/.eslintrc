@@ -1,32 +1,33 @@
 {
-  env: {
-    browser: true,
-    es2021: true,
+  "env": {
+    "browser": true,
+    "es2021": true
   },
-  extends: [
+  "extends": [
     "eslint:recommended",
     "next",
+    "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    ecmaVersion: 12,
-    sourceType: "module",
+    "ecmaVersion": 12,
+    "sourceType": "module"
   },
-  plugins: ["@typescript-eslint"],
-  overrides: [
+  "plugins": ["@typescript-eslint"],
+  "overrides": [
     {
-      files: ["*.js"],
-      rules: {
+      "files": ["*.js"],
+      "rules": {
         "@typescript-eslint/no-require-imports": 0,
-        "@typescript-eslint/no-var-requires": 0,
-      },
-    },
+        "@typescript-eslint/no-var-requires": 0
+      }
+    }
   ],
-  rules: {
+  "rules": {
     "@typescript-eslint/explicit-module-boundary-types": 0
-  },
+  }
 }
