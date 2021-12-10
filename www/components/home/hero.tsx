@@ -10,7 +10,7 @@ export default function Hero() {
         <span className="text-yellow-500 mx-0.5">.</span>
         <span className="">chat</span>
       </h1>
-      <div className="text-3xl mb-24 font-extralight">
+      <div className="text-3xl mb-24 font-medium text-slate-300">
         <div className="inline-block">No logins.</div>&nbsp;
         <div className="inline-block">No tracking.</div>&nbsp;
         <div className="inline-block">No nonsense.</div>

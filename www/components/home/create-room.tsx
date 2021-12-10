@@ -4,6 +4,7 @@ import Button from "../lib/button";
 import { cleanSlug, slugify } from "../../lib/rooms/slug";
 import { createRoomCode, randomRoomName } from "../../lib/rooms/room-encoding";
 import { useRouter } from "next/router";
+import Input from "../lib/input";
 
 export default function CreateRoom() {
   const router = useRouter();
@@ -20,14 +21,11 @@ export default function CreateRoom() {
     );
   }, [roomName, router]);
 
-  const onChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setRoomName(slugify(e.target.value));
-    },
-    []
-  );
+  const handleChange = React.useCallback((value: string) => {
+    setRoomName(slugify(value));
+  }, []);
 
-  const onSubmit = React.useCallback(
+  const handleSubmit = React.useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       submit();
@@ -38,13 +36,11 @@ export default function CreateRoom() {
   return (
     <form
       className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-24 justify-center"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
-      <input
-        className="p-2 text-black rounded shadow-md sm:w-56 shadow-white-500/50"
-        onChange={onChange}
-        placeholder="e.g. engineering standup"
-        type="text"
+      <Input
+        handleChange={handleChange}
+        placeholder="Enter a room name"
         value={roomName}
       />
       <Button

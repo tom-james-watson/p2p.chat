@@ -2,6 +2,7 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
 import Button from "../lib/button";
+import Input from "../lib/input";
 
 export default function RequestName() {
   const setLocal = useSetRecoilState(localState);
@@ -17,13 +18,6 @@ export default function RequestName() {
     });
   }, [name, setLocal]);
 
-  const onChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setName(e.target.value);
-    },
-    []
-  );
-
   const onSubmit = React.useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -37,13 +31,11 @@ export default function RequestName() {
       className="flex flex-col space-y-2 justify-center h-96"
       onSubmit={onSubmit}
     >
-      <label htmlFor="name-input">Your name</label>
-      <input
-        id="name-input"
-        className="w-56 p-2 text-black rounded"
-        onChange={onChange}
+      <label htmlFor="name">Your name</label>
+      <Input
+        handleChange={setName}
+        id="name"
         placeholder="Enter your name"
-        type="text"
         value={name}
       />
       <Button text="Continue" onClick={submit} />
