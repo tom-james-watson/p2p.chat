@@ -1,7 +1,7 @@
-const nextTranspileModules = require("next-transpile-modules");
+const withPlugins = require("next-compose-plugins");
+const withTM = require("next-transpile-modules")(["react-github-btn"]);
 
-module.exports = {
-  ...nextTranspileModules(["react-github-btn"]),
+module.exports = withPlugins([withTM], {
   webpack(config, { isServer }) {
     if (!isServer) {
       const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -9,4 +9,4 @@ module.exports = {
     }
     return config;
   },
-};
+});
