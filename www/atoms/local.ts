@@ -22,9 +22,11 @@ export type Local =
       stream: Stream;
     };
 
+export const defaultLocalState: Local = {
+  status: "requestingName",
+};
+
 export const localState = atom<Local>({
   key: "localState",
-  default: {
-    status: "requestingName",
-  },
+  default: defaultLocalState,
 });

@@ -2,12 +2,12 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
 import { createLocalStream } from "../../lib/mesh/stream";
-import Button from "../lib/button";
+import PreForm from "./pre-form";
 
 export default function RequestPermission() {
   const setLocal = useSetRecoilState(localState);
 
-  const handleClick = React.useCallback(async () => {
+  const requestPermissions = React.useCallback(async () => {
     const localStream = await createLocalStream();
 
     setLocal((local) => {
@@ -20,8 +20,20 @@ export default function RequestPermission() {
   }, [setLocal]);
 
   return (
-    <>
-      <Button text="Request permissions" onClick={handleClick} />
-    </>
+    <PreForm
+      body={
+        <>
+          <div>
+            To be able to share your camera and microphone, p2p.chat will
+            request access to these devices.
+          </div>
+          <div className="text-slate-500">
+            You&apos;ll still be able to stop sharing your devices at any time.
+          </div>
+        </>
+      }
+      handleSubmit={requestPermissions}
+      submitText="Request permissions"
+    />
   );
 }

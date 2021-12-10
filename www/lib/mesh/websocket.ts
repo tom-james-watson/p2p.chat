@@ -24,7 +24,7 @@ const addPeer = (
   });
 };
 
-type Socket = IOSocket<ServerEvents, ClientEvents>;
+export type Socket = IOSocket<ServerEvents, ClientEvents>;
 
 const onConnected =
   (socket: Socket, roomCode: string, setLocal: SetLocal) => () => {
@@ -34,7 +34,8 @@ const onConnected =
 
     setLocal((local) => {
       if (local.status !== "connecting") {
-        throw new Error("Room connected whilst in unexpected status");
+        console.warn("Room connected whilst in unexpected status");
+        return local;
       }
 
       return { ...local, status: "connected" };
@@ -146,11 +147,14 @@ const onWebRtcIceCandidate =
 export const createSocket = async (
   roomCode: string,
   localStream: Stream,
+  socketRef: React.MutableRefObject<Socket | undefined>,
   setLocal: SetLocal,
   setPeers: SetPeers
 ): Promise<void> => {
   // const socket: Socket = io("http://localhost:8080");
   const socket: Socket = io("http://192.168.1.93:8080");
+
+  socketRef.current = socket;
 
   socket.on("connected", onConnected(socket, roomCode, setLocal));
   socket.on("peerConnect", onPeerConnect(socket, localStream, setPeers));

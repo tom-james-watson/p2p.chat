@@ -1,6 +1,8 @@
+import classNames from "classnames";
 import React from "react";
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
+  borderless?: boolean;
   handleChange: (value: string) => void;
   id?: string;
   placeholder?: string;
@@ -8,7 +10,7 @@ interface Props extends React.HTMLAttributes<HTMLButtonElement> {
 }
 
 export default function Input(props: Props) {
-  const { handleChange, id, placeholder, value } = props;
+  const { borderless = false, handleChange, id, placeholder, value } = props;
 
   const _handleChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,9 +19,14 @@ export default function Input(props: Props) {
     [handleChange]
   );
 
+  const className = classNames(
+    "p-2 text-black rounded-md w-full border border-slate-300 focus:outline focus:outline-yellow-500",
+    { "border-none": borderless }
+  );
+
   return (
     <input
-      className="p-2 text-black rounded shadow sm:w-56 shadow-white-500/50"
+      className={className}
       id={id}
       onChange={_handleChange}
       placeholder={placeholder}

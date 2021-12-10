@@ -20,6 +20,7 @@ export default function Local() {
             width={400}
             height={300}
             autoPlay
+            muted
           />
         )}
       </div>

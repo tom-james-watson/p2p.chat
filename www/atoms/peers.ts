@@ -15,7 +15,9 @@ export type Peer = {
     }
 );
 
+export const defaultPeersState: Peer[] = [];
+
 export const peersState = atom<Peer[]>({
   key: "peersState",
-  default: [],
+  default: defaultPeersState,
 });

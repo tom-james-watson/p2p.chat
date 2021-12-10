@@ -11,10 +11,9 @@ export default function CreateRoom() {
   const [roomName, setRoomName] = React.useState("");
 
   const submit = React.useCallback(() => {
-    const cleanRoomName = cleanSlug(roomName);
-    const roomCode = createRoomCode(
-      cleanRoomName === "" ? randomRoomName() : cleanRoomName
-    );
+    let cleanRoomName = cleanSlug(roomName);
+    cleanRoomName = cleanRoomName === "" ? randomRoomName() : cleanRoomName;
+    const roomCode = createRoomCode(cleanRoomName);
     router.push(
       `/${roomCode}/${cleanRoomName}?created=true`,
       `/${roomCode}/${cleanRoomName}`
@@ -35,18 +34,21 @@ export default function CreateRoom() {
 
   return (
     <form
-      className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-24 justify-center"
+      className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-24 justify-center"
       onSubmit={handleSubmit}
     >
-      <Input
-        handleChange={handleChange}
-        placeholder="Enter a room name"
-        value={roomName}
-      />
+      <div className="sm:w-56">
+        <Input
+          borderless
+          handleChange={handleChange}
+          placeholder="Enter a room name"
+          value={roomName}
+        />
+      </div>
       <Button
         icon={<PlusCircleIcon width={24} />}
-        text="Create room"
         onClick={submit}
+        text="Create room"
       />
     </form>
   );

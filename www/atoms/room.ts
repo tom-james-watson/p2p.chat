@@ -15,9 +15,11 @@ export type Room =
       name: string;
     };
 
+export const defaultRoomState: Room = {
+  status: "loading",
+};
+
 export const roomState = atom<Room>({
   key: "roomState",
-  default: {
-    status: "loading",
-  },
+  default: defaultRoomState,
 });
