@@ -8,11 +8,15 @@ export interface Stream {
   };
 }
 
-async function getMediaStream(
+const getMediaStream = async (
   constraints: MediaStreamConstraints
-): Promise<MediaStream> {
+): Promise<MediaStream> => {
   return navigator.mediaDevices.getUserMedia(constraints);
-}
+};
+
+export const getDevices = async (): Promise<MediaDeviceInfo[]> => {
+  return await navigator.mediaDevices.enumerateDevices();
+};
 
 export const createLocalStream = async (): Promise<Stream> => {
   // const video = {

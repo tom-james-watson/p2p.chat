@@ -1,7 +1,7 @@
 import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
-import { createLocalStream } from "../../lib/mesh/stream";
+import { createLocalStream, getDevices } from "../../lib/mesh/stream";
 import PreForm from "./pre-form";
 
 export default function RequestPermission() {
@@ -9,6 +9,7 @@ export default function RequestPermission() {
 
   const requestPermissions = React.useCallback(async () => {
     const localStream = await createLocalStream();
+    console.log(await getDevices());
 
     setLocal((local) => {
       if (local.status !== "requestingPermissions") {

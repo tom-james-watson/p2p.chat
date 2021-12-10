@@ -6,14 +6,19 @@ import PreForm from "./pre-form";
 
 export default function RequestName() {
   const setLocal = useSetRecoilState(localState);
-  const [name, setName] = React.useState("");
+  const [name, setName] = React.useState<string>(
+    localStorage.getItem("name") ?? ""
+  );
 
   const submitName = React.useCallback(() => {
     setLocal((local) => {
       if (local.status !== "requestingName") {
-        throw new Error("Trying to set connecting whilst in unexpected status");
+        throw new Error(
+          "Trying to set requestingPermissions whilst in unexpected status"
+        );
       }
 
+      localStorage.setItem("name", name);
       return { ...local, name, status: "requestingPermissions" };
     });
   }, [name, setLocal]);
