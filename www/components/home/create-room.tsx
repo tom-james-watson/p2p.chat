@@ -37,11 +37,11 @@ export default function CreateRoom() {
 
   return (
     <form
-      className="flex flex-row space-x-2 mb-16 justify-center"
+      className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-24 justify-center"
       onSubmit={onSubmit}
     >
       <input
-        className="rounded p-2 text-black w-56"
+        className="p-2 text-black rounded shadow-md sm:w-56 shadow-white-500/50"
         onChange={onChange}
         placeholder="e.g. engineering standup"
         type="text"
