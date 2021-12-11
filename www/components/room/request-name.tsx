@@ -2,6 +2,7 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
 import Input from "../lib/input";
+import Label from "./label";
 import PreForm from "./pre-form";
 
 export default function RequestName() {
@@ -27,9 +28,7 @@ export default function RequestName() {
     <PreForm
       body={
         <>
-          <label className="text-slate-500" htmlFor="name">
-            Your name
-          </label>
+          <Label htmlFor="name" text="Your name" />
           <Input
             handleChange={setName}
             id="name"

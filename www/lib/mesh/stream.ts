@@ -1,11 +1,23 @@
 export interface Stream {
   stream: MediaStream | null;
   audio: {
-    enabled: boolean;
+    granted: boolean;
   };
   video: {
-    enabled: boolean;
+    granted: boolean;
   };
+}
+
+export interface Device {
+  id: string;
+  name: string;
+}
+
+export interface Devices {
+  audio: Device[];
+  selectedAudio: Device | null;
+  video: Device[];
+  selectedVideo: Device | null;
 }
 
 const getMediaStream = async (
@@ -14,11 +26,53 @@ const getMediaStream = async (
   return navigator.mediaDevices.getUserMedia(constraints);
 };
 
-export const getDevices = async (): Promise<MediaDeviceInfo[]> => {
-  return await navigator.mediaDevices.enumerateDevices();
+export const getDevices = async (): Promise<Devices> => {
+  const devices: Devices = {
+    audio: [],
+    selectedAudio: null,
+    video: [],
+    selectedVideo: null,
+  };
+
+  (await navigator.mediaDevices.enumerateDevices()).forEach((mediaDevice) => {
+    // We can't see what the device is. This happens when you enumerate devices
+    // without permission having being granted to access that type of device.
+    if (mediaDevice.label === "") {
+      return;
+    }
+
+    const device: Device = {
+      id: mediaDevice.deviceId,
+      name: mediaDevice.label,
+    };
+
+    if (mediaDevice.kind.toLowerCase().includes("audio")) {
+      devices.audio.push(device);
+
+      if (devices.selectedAudio === null) {
+        devices.selectedAudio = device;
+      }
+    }
+
+    if (mediaDevice.kind.toLowerCase().includes("video")) {
+      devices.video.push(device);
+
+      if (devices.selectedVideo === null) {
+        devices.selectedVideo = device;
+      }
+    }
+  });
+
+  return devices;
 };
 
-export const createLocalStream = async (): Promise<Stream> => {
+export const createLocalStream = async ({
+  audioDeviceId,
+  videoDeviceId,
+}: {
+  audioDeviceId?: string;
+  videoDeviceId?: string;
+} = {}): Promise<Stream> => {
   // const video = {
   //   facingMode: "user",
   //   // width: { min: 640, ideal: 1280, max: 1920 },
@@ -32,29 +86,34 @@ export const createLocalStream = async (): Promise<Stream> => {
   //   channelCount: { ideal: 1 },
   // };
 
+  const audio =
+    audioDeviceId !== undefined ? { deviceId: audioDeviceId } : true;
+  const video =
+    videoDeviceId !== undefined ? { deviceId: videoDeviceId } : true;
+
   try {
     // Try and get video and audio
-    const stream = await getMediaStream({ video: true, audio: true });
-    return { stream, audio: { enabled: true }, video: { enabled: true } };
+    const stream = await getMediaStream({ video, audio });
+    return { stream, audio: { granted: true }, video: { granted: true } };
   } catch (err) {
     console.error(err);
     try {
       // Try just audio
-      const stream = await getMediaStream({ audio: true });
-      return { stream, audio: { enabled: true }, video: { enabled: false } };
+      const stream = await getMediaStream({ audio });
+      return { stream, audio: { granted: true }, video: { granted: false } };
     } catch (err) {
       console.error(err);
       try {
         // Try just video
-        const stream = await getMediaStream({ video: true });
-        return { stream, audio: { enabled: false }, video: { enabled: true } };
+        const stream = await getMediaStream({ video });
+        return { stream, audio: { granted: false }, video: { granted: true } };
       } catch (err) {
         console.error(err);
         // No stream
         return {
           stream: null,
-          audio: { enabled: false },
-          video: { enabled: false },
+          audio: { granted: false },
+          video: { granted: false },
         };
       }
     }

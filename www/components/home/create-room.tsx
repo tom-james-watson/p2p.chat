@@ -46,7 +46,7 @@ export default function CreateRoom() {
         />
       </div>
       <Button
-        icon={<PlusCircleIcon width={24} />}
+        icon={<PlusCircleIcon width={20} />}
         onClick={submit}
         text="Create room"
       />

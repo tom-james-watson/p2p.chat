@@ -23,7 +23,7 @@ export default function PreForm(props: Props) {
       className="flex w-full h-full items-center justify-center text-black"
       onSubmit={_handleSubmit}
     >
-      <div className="flex flex-col h-64 w-80 rounded-lg bg-white">
+      <div className="flex flex-col w-80 rounded-lg bg-white">
         <div className="flex flex-col flex-grow p-4 space-y-2">{body}</div>
         <div className="p-4 border-t border-slate-300">
           <Button text={submitText} onClick={handleSubmit} fill />

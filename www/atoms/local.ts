@@ -12,6 +12,11 @@ export type Local =
       name: string;
     }
   | {
+      status: "requestingDevices";
+      name: string;
+      stream: Stream;
+    }
+  | {
       status: "connecting";
       name: string;
       stream: Stream;

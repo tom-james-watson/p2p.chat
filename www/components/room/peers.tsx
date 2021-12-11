@@ -8,7 +8,6 @@ export default function Peers() {
   return (
     <>
       {peers.map((peer) => {
-        console.log({ peer });
         return (
           <div key={peer.sid}>
             {peer.sid}

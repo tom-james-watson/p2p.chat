@@ -9,14 +9,15 @@ export default function RequestPermission() {
 
   const requestPermissions = React.useCallback(async () => {
     const localStream = await createLocalStream();
-    console.log(await getDevices());
 
     setLocal((local) => {
       if (local.status !== "requestingPermissions") {
-        throw new Error("Trying to set connecting whilst in unexpected status");
+        throw new Error(
+          "Trying to set requestingDevices whilst in unexpected status"
+        );
       }
 
-      return { ...local, stream: localStream, status: "connecting" };
+      return { ...local, stream: localStream, status: "requestingDevices" };
     });
   }, [setLocal]);
 
