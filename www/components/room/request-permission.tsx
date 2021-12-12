@@ -1,7 +1,7 @@
 import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
-import { createLocalStream, getDevices } from "../../lib/mesh/stream";
+import { createLocalStream } from "../../lib/mesh/stream";
 import PreForm from "./pre-form";
 
 export default function RequestPermission() {

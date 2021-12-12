@@ -51,6 +51,7 @@ export default function Room() {
       setLocal((local) => {
         // Disconnect from websocket if it exists
         if (socketRef.current !== undefined) {
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           socketRef.current.disconnect();
         }
 
