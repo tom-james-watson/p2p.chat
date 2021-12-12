@@ -117,7 +117,7 @@ export default function RequestDevices() {
                 }}
                 autoPlay
                 muted
-                className="w-full h-full object-cover rounded-md"
+                className="w-full h-full object-cover rounded-md scale-x-[-1]"
               />
             )}
           </div>
