@@ -20,6 +20,12 @@ export interface Devices {
   selectedVideo: Device | null;
 }
 
+export const stopStream = (stream: Stream) => {
+  stream.stream?.getTracks().forEach((track) => {
+    track.stop();
+  });
+};
+
 const getMediaStream = async (
   constraints: MediaStreamConstraints
 ): Promise<MediaStream> => {
