@@ -10,6 +10,7 @@ import { SetPeers } from "../../atoms/peers";
 import { SetLocal } from "../../atoms/local";
 import { Stream } from "./stream";
 import { createRtcPeerConnection } from "./webrtc";
+import assert from "assert";
 
 const addPeer = (
   sid: string,
@@ -33,11 +34,7 @@ const onConnected =
     socket.emit("joinRoom", roomCode);
 
     setLocal((local) => {
-      if (local.status !== "connecting") {
-        console.warn("Room connected whilst in unexpected status");
-        return local;
-      }
-
+      assert(local.status === "connecting");
       return { ...local, status: "connected" };
     });
   };

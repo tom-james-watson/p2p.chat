@@ -1,9 +1,11 @@
 import { MicrophoneIcon, VideoCameraIcon } from "@heroicons/react/outline";
+import assert from "assert";
 import React from "react";
 import { useRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
 import { createLocalStream, Devices, getDevices } from "../../lib/mesh/stream";
 import Select from "../lib/select";
+import LocalPreview from "./local-preview";
 import PreForm from "./pre-form";
 
 export default function RequestDevices() {
@@ -18,10 +20,7 @@ export default function RequestDevices() {
 
   const joinRoom = React.useCallback(async () => {
     setLocal((local) => {
-      if (local.status !== "requestingDevices") {
-        throw new Error("Trying to set connecting whilst in unexpected status");
-      }
-
+      assert(local.status === "requestingDevices");
       return { ...local, status: "connecting" };
     });
   }, [setLocal]);
@@ -32,10 +31,7 @@ export default function RequestDevices() {
         return;
       }
 
-      if (local.status !== "requestingDevices") {
-        throw new Error("Trying to set connecting whilst in unexpected status");
-      }
-
+      assert(local.status === "requestingDevices");
       local.stream.stream?.getTracks().forEach((track) => {
         track.stop();
       });
@@ -52,12 +48,7 @@ export default function RequestDevices() {
 
       setDevices({ ...devices, selectedAudio });
       setLocal((local) => {
-        if (local.status !== "requestingDevices") {
-          throw new Error(
-            "Trying to set connecting whilst in unexpected status"
-          );
-        }
-
+        assert(local.status === "requestingDevices");
         return { ...local, stream };
       });
     },
@@ -70,10 +61,7 @@ export default function RequestDevices() {
         return;
       }
 
-      if (local.status !== "requestingDevices") {
-        throw new Error("Trying to set connecting whilst in unexpected status");
-      }
-
+      assert(local.status === "requestingDevices");
       local.stream.stream?.getTracks().forEach((track) => {
         track.stop();
       });
@@ -90,12 +78,7 @@ export default function RequestDevices() {
 
       setDevices({ ...devices, selectedVideo });
       setLocal((local) => {
-        if (local.status !== "requestingDevices") {
-          throw new Error(
-            "Trying to set connecting whilst in unexpected status"
-          );
-        }
-
+        assert(local.status === "requestingDevices");
         return { ...local, stream };
       });
     },
@@ -106,21 +89,7 @@ export default function RequestDevices() {
     <PreForm
       body={
         <>
-          <div className="w-full h-48 bg-slate-900 rounded-md">
-            {local.status === "requestingDevices" && (
-              <video
-                ref={(video) => {
-                  if (video === null) {
-                    return;
-                  }
-                  video.srcObject = local.stream.stream;
-                }}
-                autoPlay
-                muted
-                className="w-full h-full object-cover rounded-md scale-x-[-1]"
-              />
-            )}
-          </div>
+          <LocalPreview />
           <Select
             id="audio-select"
             fallback="No microphones found"

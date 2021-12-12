@@ -1,3 +1,4 @@
+import assert from "assert";
 import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
@@ -11,11 +12,7 @@ export default function RequestPermission() {
     const localStream = await createLocalStream();
 
     setLocal((local) => {
-      if (local.status !== "requestingPermissions") {
-        throw new Error(
-          "Trying to set requestingDevices whilst in unexpected status"
-        );
-      }
+      assert(local.status === "requestingPermissions");
 
       return { ...local, stream: localStream, status: "requestingDevices" };
     });

@@ -1,3 +1,4 @@
+import assert from "assert";
 import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
@@ -13,12 +14,7 @@ export default function RequestName() {
 
   const submitName = React.useCallback(() => {
     setLocal((local) => {
-      if (local.status !== "requestingName") {
-        throw new Error(
-          "Trying to set requestingPermissions whilst in unexpected status"
-        );
-      }
-
+      assert(local.status === "requestingName");
       localStorage.setItem("name", name);
       return { ...local, name, status: "requestingPermissions" };
     });
