@@ -1,7 +1,6 @@
 import React from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/router";
-import Loader from "react-loader-spinner";
 import { validateRoom } from "../../lib/rooms/room-encoding";
 import { createSocket, Socket } from "../../lib/mesh/websocket";
 import { defaultLocalState, localState } from "../../atoms/local";
@@ -9,9 +8,9 @@ import { defaultPeersState, peersState } from "../../atoms/peers";
 import { defaultRoomState, roomState } from "../../atoms/room";
 import RequestName from "../../components/room/request-name";
 import RequestPermission from "../../components/room/request-permission";
-import Local from "../../components/room/local";
-import Peers from "../../components/room/peers";
 import RequestDevices from "../../components/room/request-devices";
+import Loading from "../../components/room/loading";
+import Call from "../../components/room/call";
 
 export default function Room() {
   const router = useRouter();
@@ -78,25 +77,15 @@ export default function Room() {
 
   return (
     <div className="h-full w-full max-h-full max-w-full overflow-hidden">
-      {room.status === "loading" && (
-        <Loader type="Oval" color="#006699" height={60} width={60} />
-      )}
+      {room.status === "loading" && <Loading />}
       {room.status === "error" && <p>{room.error}</p>}
       {room.status === "ready" && (
         <>
           {local.status === "requestingName" && <RequestName />}
           {local.status === "requestingPermissions" && <RequestPermission />}
           {local.status === "requestingDevices" && <RequestDevices />}
-          {local.status === "connecting" && (
-            <Loader type="Oval" color="#006699" height={60} width={60} />
-          )}
-          {local.status === "connected" && (
-            <>
-              <p>Connected to ${room.name}</p>
-              <Local />
-              <Peers />
-            </>
-          )}
+          {local.status === "connecting" && <Loading />}
+          {local.status === "connected" && <Call />}
         </>
       )}
     </div>

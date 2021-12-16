@@ -34,7 +34,7 @@ const onConnected =
     socket.emit("joinRoom", roomCode);
 
     setLocal((local) => {
-      assert(local.status === "connecting");
+      assert(local.status === "connecting" || local.status === "connected");
       return { ...local, status: "connected" };
     });
   };
