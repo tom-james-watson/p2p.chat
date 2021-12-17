@@ -1,7 +1,6 @@
-import assert from "assert";
 import React from "react";
 import { useSetRecoilState } from "recoil";
-import { localState } from "../../atoms/local";
+import { localActions, localState } from "../../atoms/local";
 import Input from "../lib/input";
 import Label from "./label";
 import PreForm from "./pre-form";
@@ -13,11 +12,7 @@ export default function RequestName() {
   );
 
   const submitName = React.useCallback(() => {
-    setLocal((local) => {
-      assert(local.status === "requestingName");
-      localStorage.setItem("name", name);
-      return { ...local, name, status: "requestingPermissions" };
-    });
+    setLocal(localActions.setRequestingPermissions(name));
   }, [name, setLocal]);
 
   return (

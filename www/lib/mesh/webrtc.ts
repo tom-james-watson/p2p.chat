@@ -1,7 +1,7 @@
 import { SetterOrUpdater } from "recoil";
 import { Socket } from "socket.io-client";
 import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
-import { Peer } from "../../atoms/peers";
+import { Peer, peersActions } from "../../atoms/peers";
 import { Stream } from "./stream";
 
 const iceServers = {
@@ -29,28 +29,9 @@ export const createRtcPeerConnection = (
   });
 
   rtcPeerConnection.ontrack = (e) => {
-    console.debug("ontrack", e.streams.length);
-    setPeers((peers) => {
-      if (
-        !peers.some((peer) => {
-          return peer.sid === sid;
-        })
-      ) {
-        throw new Error("no peer found for track");
-      }
-
-      return peers.map((peer): Peer => {
-        if (peer.sid !== sid) {
-          return peer;
-        }
-
-        return {
-          ...peer,
-          streams: [...peer.streams, ...e.streams],
-        };
-      });
-    });
+    setPeers(peersActions.addPeerTrack(sid, e.streams));
   };
+
   rtcPeerConnection.onicecandidate = (e) => {
     if (e.candidate !== null) {
       socket.emit("webRtcIceCandidate", {
@@ -64,16 +45,8 @@ export const createRtcPeerConnection = (
       rtcPeerConnection.iceConnectionState === "connected" ||
       rtcPeerConnection.iceConnectionState === "completed"
     ) {
-      setPeers((peers) => {
-        return peers.map((peer): Peer => {
-          if (peer.sid !== sid) {
-            return peer;
-          }
-
-          console.debug(`peer fully connected ${peer.sid}`);
-          return { ...peer, status: "connected" };
-        });
-      });
+      console.debug(`peer fully connected ${sid}`);
+      setPeers(peersActions.setPeerConnected(sid));
     }
   };
 

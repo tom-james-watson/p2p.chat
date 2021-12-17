@@ -6,37 +6,18 @@ import {
   WebRtcIceCandidate,
   WebRtcOffer,
 } from "../../../lib/src/types/websockets";
-import { SetPeers } from "../../atoms/peers";
-import { SetLocal } from "../../atoms/local";
+import { peersActions, SetPeers } from "../../atoms/peers";
+import { localActions, SetLocal } from "../../atoms/local";
 import { Stream } from "./stream";
 import { createRtcPeerConnection } from "./webrtc";
-import assert from "assert";
-
-const addPeer = (
-  sid: string,
-  rtcPeerConnection: RTCPeerConnection,
-  setPeers: SetPeers
-) => {
-  setPeers((peers) => {
-    return [
-      ...peers,
-      { rtcPeerConnection, sid, status: "connecting", streams: [] },
-    ];
-  });
-};
 
 export type Socket = IOSocket<ServerEvents, ClientEvents>;
 
 const onConnected =
   (socket: Socket, roomCode: string, setLocal: SetLocal) => () => {
     console.debug(`connected`);
-
     socket.emit("joinRoom", roomCode);
-
-    setLocal((local) => {
-      assert(local.status === "connecting" || local.status === "connected");
-      return { ...local, status: "connected" };
-    });
+    setLocal(localActions.setSocket);
   };
 
 const onPeerConnect =
@@ -54,25 +35,14 @@ const onPeerConnect =
     const offerSdp = await rtcPeerConnection.createOffer();
     rtcPeerConnection.setLocalDescription(offerSdp);
 
-    addPeer(sid, rtcPeerConnection, setPeers);
+    setPeers(peersActions.addPeer(sid, rtcPeerConnection));
 
     socket.emit("webRtcOffer", { offerSdp, sid });
   };
 
 const onPeerDisconnect = (setPeers: SetPeers) => (sid: string) => {
-  setPeers((peers) => {
-    console.debug(`peerDisconnect sid=${sid}`);
-    const peer = peers.find((peer) => peer.sid === sid);
-
-    if (peer === undefined) {
-      console.warn("Peer disconnected, but cannot be found in peers");
-      return peers;
-    }
-
-    peer.rtcPeerConnection.close();
-
-    return peers.filter((peer) => peer.sid !== sid);
-  });
+  console.debug(`peerDisconnect sid=${sid}`);
+  setPeers(peersActions.deletePeer(sid));
 };
 
 const onWebRtcOffer =
@@ -88,7 +58,7 @@ const onWebRtcOffer =
       false
     );
 
-    addPeer(sid, rtcPeerConnection, setPeers);
+    setPeers(peersActions.addPeer(sid, rtcPeerConnection));
 
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
     const answerSdp = await rtcPeerConnection.createAnswer();
@@ -101,46 +71,16 @@ const onWebRtcOffer =
   };
 
 const onWebRtcAnswer =
-  (socket: Socket, setPeers: SetPeers) =>
-  ({ answerSdp, sid }: WebRtcAnswer) => {
-    console.debug(`webRtcAnswer fromSid=${socket.id} toSid=${sid}`);
-
-    setPeers((peers) => {
-      return peers.map((peer) => {
-        if (peer.sid !== sid) {
-          return peer;
-        }
-
-        const rtcPeerConnection = peer.rtcPeerConnection;
-        rtcPeerConnection.setRemoteDescription(
-          new RTCSessionDescription(answerSdp)
-        );
-
-        return { ...peer, rtcPeerConnection };
-      });
-    });
+  (socket: Socket, setPeers: SetPeers) => (webRtcAnswer: WebRtcAnswer) => {
+    console.debug(
+      `webRtcAnswer fromSid=${socket.id} toSid=${webRtcAnswer.sid}`
+    );
+    setPeers(peersActions.setPeerRemoteDescription(webRtcAnswer));
   };
 
 const onWebRtcIceCandidate =
-  (setPeers: SetPeers) =>
-  ({ candidate, label, sid }: WebRtcIceCandidate) => {
-    setPeers((peers) => {
-      return peers.map((peer) => {
-        if (peer.sid !== sid) {
-          return peer;
-        }
-
-        const rtcPeerConnection = peer.rtcPeerConnection;
-        rtcPeerConnection.addIceCandidate(
-          new RTCIceCandidate({
-            sdpMLineIndex: label,
-            candidate: candidate,
-          })
-        );
-
-        return { ...peer, rtcPeerConnection };
-      });
-    });
+  (setPeers: SetPeers) => (webRtcIceCandidate: WebRtcIceCandidate) => {
+    setPeers(peersActions.addPeerIceCandidate(webRtcIceCandidate));
   };
 
 export const createSocket = async (

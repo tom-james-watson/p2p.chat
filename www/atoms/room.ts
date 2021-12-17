@@ -23,3 +23,16 @@ export const roomState = atom<Room>({
   key: "roomState",
   default: defaultRoomState,
 });
+
+const setError = (): Room => {
+  return { status: "error", error: "Invalid room" };
+};
+
+const setReady = (roomName: string) => (): Room => {
+  return { status: "ready", name: roomName };
+};
+
+export const roomActions = {
+  setError,
+  setReady,
+};

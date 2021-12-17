@@ -2,7 +2,7 @@ import { MicrophoneIcon, VideoCameraIcon } from "@heroicons/react/outline";
 import assert from "assert";
 import React from "react";
 import { useRecoilState } from "recoil";
-import { localState } from "../../atoms/local";
+import { localActions, localState } from "../../atoms/local";
 import {
   createLocalStream,
   Devices,
@@ -25,10 +25,7 @@ export default function RequestDevices() {
   }, []);
 
   const joinRoom = React.useCallback(async () => {
-    setLocal((local) => {
-      assert(local.status === "requestingDevices");
-      return { ...local, status: "connecting" };
-    });
+    setLocal(localActions.setConnecting);
   }, [setLocal]);
 
   const handleDeviceChange = React.useCallback(
@@ -42,11 +39,7 @@ export default function RequestDevices() {
 
       assert(local.status === "requestingDevices");
       stopStream(local.stream);
-      const stream = await cb(devices);
-      setLocal((local) => {
-        assert(local.status === "requestingDevices");
-        return { ...local, stream };
-      });
+      setLocal(localActions.updateStream(await cb(devices)));
     },
     [devices, local, setLocal]
   );

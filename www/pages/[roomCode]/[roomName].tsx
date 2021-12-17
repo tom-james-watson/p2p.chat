@@ -3,9 +3,9 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/router";
 import { validateRoom } from "../../lib/rooms/room-encoding";
 import { createSocket, Socket } from "../../lib/mesh/websocket";
-import { defaultLocalState, localState } from "../../atoms/local";
+import { localActions, localState } from "../../atoms/local";
 import { defaultPeersState, peersState } from "../../atoms/peers";
-import { defaultRoomState, roomState } from "../../atoms/room";
+import { defaultRoomState, roomActions, roomState } from "../../atoms/room";
 import RequestName from "../../components/room/request-name";
 import RequestPermission from "../../components/room/request-permission";
 import RequestDevices from "../../components/room/request-devices";
@@ -33,11 +33,11 @@ export default function Room() {
       try {
         validateRoom(roomCode, roomName);
       } catch (err) {
-        setRoom({ status: "error", error: "Invalid room" });
+        setRoom(roomActions.setError);
         return;
       }
 
-      setRoom({ status: "ready", name: roomName });
+      setRoom(roomActions.setReady(roomName));
     })();
   }, [router.isReady, router.query, setRoom]);
 
@@ -47,22 +47,7 @@ export default function Room() {
       // Reset app state
       setPeers(defaultPeersState);
       setRoom(defaultRoomState);
-      setLocal((local) => {
-        // Disconnect from websocket if it exists
-        if (socketRef.current !== undefined) {
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          socketRef.current.disconnect();
-        }
-
-        // Stop any local stream tracks
-        if (local.status === "connecting" || local.status === "connected") {
-          local.stream.stream?.getTracks().forEach((track) => {
-            track.stop();
-          });
-        }
-
-        return defaultLocalState;
-      });
+      setLocal(localActions.cleanup(socketRef));
     };
   }, [setLocal, setPeers, setRoom]);
 
