@@ -15,7 +15,8 @@ export const createRtcPeerConnection = (
   socket: Socket<ServerEvents, ClientEvents>,
   localStream: Stream,
   sid: string,
-  setPeers: SetterOrUpdater<Peer[]>
+  setPeers: SetterOrUpdater<Peer[]>,
+  creator: boolean
 ): RTCPeerConnection => {
   const rtcPeerConnection = new RTCPeerConnection(iceServers);
 
@@ -74,6 +75,30 @@ export const createRtcPeerConnection = (
         });
       });
     }
+  };
+
+  if (creator) {
+    const dataChannel = rtcPeerConnection.createDataChannel("data");
+
+    dataChannel.onopen = function (event) {
+      dataChannel.send("Hi you!");
+    };
+
+    dataChannel.onmessage = function (event) {
+      console.log(event.data);
+    };
+  }
+
+  // TODO - refactor this function so that it's a promise that only resolves
+  // once we have a datachannel that we can also save to the peer store.
+  rtcPeerConnection.ondatachannel = function (event) {
+    const channel = event.channel;
+    channel.onopen = function (event) {
+      channel.send("Hi back!");
+    };
+    channel.onmessage = function (event) {
+      console.log(event.data);
+    };
   };
 
   return rtcPeerConnection;

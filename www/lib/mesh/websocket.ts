@@ -48,7 +48,8 @@ const onPeerConnect =
       socket,
       localStream,
       sid,
-      setPeers
+      setPeers,
+      true
     );
     const offerSdp = await rtcPeerConnection.createOffer();
     rtcPeerConnection.setLocalDescription(offerSdp);
@@ -83,7 +84,8 @@ const onWebRtcOffer =
       socket,
       localStream,
       sid,
-      setPeers
+      setPeers,
+      false
     );
 
     addPeer(sid, rtcPeerConnection, setPeers);
