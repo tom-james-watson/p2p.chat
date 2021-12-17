@@ -15,7 +15,7 @@ export default function PeerVideo(props: Props) {
   // see slowness on the video appearing, that is probably why and we can look
   // into displaying the video earlier.
   return (
-    <GridVideo>
+    <GridVideo name={peer.name}>
       <>
         {peer.status === "connected" && peer.stream !== undefined && (
           <Video stream={peer.stream} />

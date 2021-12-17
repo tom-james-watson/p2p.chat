@@ -24,6 +24,7 @@ export default function RequestName() {
             handleChange={setName}
             id="name"
             placeholder="Enter your name"
+            required
             value={name}
           />
         </>

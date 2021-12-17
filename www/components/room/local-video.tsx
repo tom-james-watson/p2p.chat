@@ -11,7 +11,7 @@ export default function LocalVideo() {
   assert(local.status === "connecting" || local.status === "connected");
 
   return (
-    <GridVideo>
+    <GridVideo name="You">
       <>
         {local.stream.stream !== null && (
           <Video local stream={local.stream.stream} />

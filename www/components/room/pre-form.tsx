@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../lib/button";
+import Submit from "../lib/submit";
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
   body: React.ReactElement;
@@ -26,7 +26,7 @@ export default function PreForm(props: Props) {
       <div className="flex flex-col w-80 rounded-lg bg-white">
         <div className="flex flex-col flex-grow p-4 space-y-2">{body}</div>
         <div className="p-4 border-t border-slate-300">
-          <Button text={submitText} onClick={handleSubmit} fill />
+          <Submit text={submitText} fill />
         </div>
       </div>
     </form>
