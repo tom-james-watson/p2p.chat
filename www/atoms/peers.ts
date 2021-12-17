@@ -55,6 +55,7 @@ const addPeerIceCandidate =
 const addPeerTrack =
   (sid: string, stream: MediaStream) =>
   (peers: Peer[]): Peer[] => {
+    console.log({ peers, sid });
     if (
       !peers.some((peer) => {
         return peer.sid === sid;

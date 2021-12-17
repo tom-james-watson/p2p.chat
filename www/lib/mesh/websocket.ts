@@ -7,8 +7,7 @@ import {
   WebRtcOffer,
 } from "../../../lib/src/types/websockets";
 import { peersActions, SetPeers } from "../../atoms/peers";
-import { localActions, SetLocal } from "../../atoms/local";
-import { Stream } from "./stream";
+import { Local, localActions, SetLocal } from "../../atoms/local";
 import { createRtcPeerConnection } from "./webrtc";
 
 export type Socket = IOSocket<ServerEvents, ClientEvents>;
@@ -21,13 +20,12 @@ const onConnected =
   };
 
 const onPeerConnect =
-  (socket: Socket, localStream: Stream, setPeers: SetPeers) =>
-  async (sid: string) => {
+  (socket: Socket, local: Local, setPeers: SetPeers) => async (sid: string) => {
     console.debug(`peerConnect sid=${sid}`);
 
     const rtcPeerConnection = createRtcPeerConnection(
       socket,
-      localStream,
+      local,
       sid,
       setPeers,
       true
@@ -45,21 +43,21 @@ const onPeerDisconnect = (setPeers: SetPeers) => (sid: string) => {
 };
 
 const onWebRtcOffer =
-  (socket: Socket, localStream: Stream, setPeers: SetPeers) =>
+  (socket: Socket, local: Local, setPeers: SetPeers) =>
   async ({ offerSdp, sid }: WebRtcOffer) => {
     console.debug(`webRtcOffer fromSid=${socket.id} toSid=${sid}`);
 
     const rtcPeerConnection = createRtcPeerConnection(
       socket,
-      localStream,
+      local,
       sid,
       setPeers,
       false
     );
+    setPeers(peersActions.addPeer(sid, rtcPeerConnection));
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
     const answerSdp = await rtcPeerConnection.createAnswer();
     rtcPeerConnection.setLocalDescription(answerSdp);
-    setPeers(peersActions.addPeer(sid, rtcPeerConnection));
 
     socket.emit("webRtcAnswer", { answerSdp, sid });
   };
@@ -79,7 +77,7 @@ const onWebRtcIceCandidate =
 
 export const createSocket = async (
   roomCode: string,
-  localStream: Stream,
+  local: Local,
   socketRef: React.MutableRefObject<Socket | undefined>,
   setLocal: SetLocal,
   setPeers: SetPeers
@@ -90,9 +88,9 @@ export const createSocket = async (
   socketRef.current = socket;
 
   socket.on("connected", onConnected(socket, roomCode, setLocal));
-  socket.on("peerConnect", onPeerConnect(socket, localStream, setPeers));
+  socket.on("peerConnect", onPeerConnect(socket, local, setPeers));
   socket.on("peerDisconnect", onPeerDisconnect(setPeers));
-  socket.on("webRtcOffer", onWebRtcOffer(socket, localStream, setPeers));
+  socket.on("webRtcOffer", onWebRtcOffer(socket, local, setPeers));
   socket.on("webRtcAnswer", onWebRtcAnswer(socket, setPeers));
   socket.on("webRtcIceCandidate", onWebRtcIceCandidate(setPeers));
 };

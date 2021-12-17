@@ -55,7 +55,7 @@ export default function Room() {
     (async () => {
       if (local.status === "connecting") {
         const roomCode = router.query.roomCode as string;
-        createSocket(roomCode, local.stream, socketRef, setLocal, setPeers);
+        createSocket(roomCode, local, socketRef, setLocal, setPeers);
       }
     })();
   }, [local, router.query.roomCode, setLocal, setPeers]);

@@ -1,8 +1,10 @@
+import assert from "assert";
 import { SetterOrUpdater } from "recoil";
 import { Socket } from "socket.io-client";
 import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
+import { Local } from "../../atoms/local";
 import { Peer, peersActions } from "../../atoms/peers";
-import { Stream } from "./stream";
+import { registerDataChannel } from "./data";
 
 const iceServers = {
   iceServers: [
@@ -13,19 +15,19 @@ const iceServers = {
 
 export const createRtcPeerConnection = (
   socket: Socket<ServerEvents, ClientEvents>,
-  localStream: Stream,
+  local: Local,
   sid: string,
   setPeers: SetterOrUpdater<Peer[]>,
   creator: boolean
 ): RTCPeerConnection => {
+  assert(local.status === "connecting");
+
   const rtcPeerConnection = new RTCPeerConnection(iceServers);
 
-  localStream.stream?.getTracks().forEach((track) => {
-    if (localStream.stream === null) {
-      return;
+  local.stream.stream?.getTracks().forEach((track) => {
+    if (local.stream.stream !== null) {
+      rtcPeerConnection.addTrack(track, local.stream.stream);
     }
-
-    rtcPeerConnection.addTrack(track, localStream.stream);
   });
 
   rtcPeerConnection.ontrack = (e) => {
@@ -54,28 +56,13 @@ export const createRtcPeerConnection = (
   };
 
   if (creator) {
-    const dataChannel = rtcPeerConnection.createDataChannel("data");
-
-    dataChannel.onopen = function (event) {
-      dataChannel.send("Hi you!");
-    };
-
-    dataChannel.onmessage = function (event) {
-      console.log(event.data);
+    const channel = rtcPeerConnection.createDataChannel("data");
+    registerDataChannel(sid, channel, local);
+  } else {
+    rtcPeerConnection.ondatachannel = (event) => {
+      registerDataChannel(sid, event.channel, local);
     };
   }
-
-  // TODO - refactor this function so that it's a promise that only resolves
-  // once we have a datachannel that we can also save to the peer store.
-  rtcPeerConnection.ondatachannel = function (event) {
-    const channel = event.channel;
-    channel.onopen = function (event) {
-      channel.send("Hi back!");
-    };
-    channel.onmessage = function (event) {
-      console.log(event.data);
-    };
-  };
 
   return rtcPeerConnection;
 };
