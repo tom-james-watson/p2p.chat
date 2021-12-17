@@ -30,12 +30,9 @@ export default function Grid() {
   }, [peers]);
 
   const isPortrait = (width ?? 0) < (height ?? 0);
-
   const total = videos.length;
-
   const x = Math.floor(Math.sqrt(total));
   const y = Math.ceil(total / x);
-
   const cols = isPortrait ? x : y;
   const rows = isPortrait ? y : x;
 
@@ -43,21 +40,25 @@ export default function Grid() {
     return chunk(videos, isPortrait ? rows : cols);
   }, [cols, isPortrait, videos, rows]);
 
-  const padding = window.innerWidth < 640 ? 4 : 8;
+  const { cellWidth, cellHeight } = React.useMemo(() => {
+    const padding = window.innerWidth < 640 ? 4 : 8;
 
-  let cellWidth = (width ?? 0) / cols;
-  let cellHeight = (height ?? 0) / rows;
+    let cellWidth = (width ?? 0) / cols;
+    let cellHeight = (height ?? 0) / rows;
 
-  if (cellWidth / 4 > cellHeight / 3) {
-    cellWidth = 4 * (cellHeight / 3);
-  }
+    if (cellWidth / 4 > cellHeight / 3) {
+      cellWidth = 4 * (cellHeight / 3);
+    }
 
-  if (cellHeight > cellWidth) {
-    cellHeight = cellWidth;
-  }
+    if (cellHeight > cellWidth) {
+      cellHeight = cellWidth;
+    }
 
-  cellWidth = cellWidth - (padding * rows - padding);
-  cellHeight = cellHeight - (padding * rows - padding);
+    return {
+      cellWidth: cellWidth - (padding * rows - padding),
+      cellHeight: cellHeight - (padding * rows - padding),
+    };
+  }, [cols, height, rows, width]);
 
   const columnClassName = classNames(
     "flex items-center justify-center w-full h-full",
