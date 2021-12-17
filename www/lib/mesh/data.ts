@@ -1,5 +1,6 @@
 import assert from "assert";
 import { Local } from "../../atoms/local";
+import { peersActions, SetPeers } from "../../atoms/peers";
 
 interface MessageName {
   type: "name";
@@ -8,8 +9,9 @@ interface MessageName {
 
 export type Message = MessageName;
 
-const onName = (sid: string, message: MessageName) => {
+const onName = (sid: string, message: MessageName, setPeers: SetPeers) => {
   console.debug(`received name sid=[${sid}] name=[${message.name}]`);
+  setPeers(peersActions.setPeerName(sid, message.name));
 };
 
 const sendMessage = (channel: RTCDataChannel, message: Message) => {
@@ -19,7 +21,8 @@ const sendMessage = (channel: RTCDataChannel, message: Message) => {
 export const registerDataChannel = (
   sid: string,
   channel: RTCDataChannel,
-  local: Local
+  local: Local,
+  setPeers: SetPeers
 ): void => {
   assert(local.status !== "requestingName");
 
@@ -32,7 +35,7 @@ export const registerDataChannel = (
 
     switch (message.type) {
       case "name": {
-        onName(sid, message);
+        onName(sid, message, setPeers);
       }
     }
   };

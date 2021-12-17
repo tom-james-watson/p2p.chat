@@ -1,9 +1,8 @@
 import assert from "assert";
-import { SetterOrUpdater } from "recoil";
 import { Socket } from "socket.io-client";
 import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
 import { Local } from "../../atoms/local";
-import { Peer, peersActions } from "../../atoms/peers";
+import { peersActions, SetPeers } from "../../atoms/peers";
 import { registerDataChannel } from "./data";
 
 const iceServers = {
@@ -17,7 +16,7 @@ export const createRtcPeerConnection = (
   socket: Socket<ServerEvents, ClientEvents>,
   local: Local,
   sid: string,
-  setPeers: SetterOrUpdater<Peer[]>,
+  setPeers: SetPeers,
   creator: boolean
 ): RTCPeerConnection => {
   assert(local.status === "connecting");
@@ -57,10 +56,10 @@ export const createRtcPeerConnection = (
 
   if (creator) {
     const channel = rtcPeerConnection.createDataChannel("data");
-    registerDataChannel(sid, channel, local);
+    registerDataChannel(sid, channel, local, setPeers);
   } else {
     rtcPeerConnection.ondatachannel = (event) => {
-      registerDataChannel(sid, event.channel, local);
+      registerDataChannel(sid, event.channel, local, setPeers);
     };
   }
 

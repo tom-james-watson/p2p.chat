@@ -10,6 +10,7 @@ export type Peer = {
   sid: string;
   rtcPeerConnection: RTCPeerConnection;
   stream?: MediaStream;
+  name?: string;
 } & (
   | {
       status: "connecting";
@@ -100,6 +101,18 @@ const setPeerConnected =
     });
   };
 
+const setPeerName =
+  (sid: string, name: string) =>
+  (peers: Peer[]): Peer[] => {
+    return peers.map((peer): Peer => {
+      if (peer.sid !== sid) {
+        return peer;
+      }
+
+      return { ...peer, name };
+    });
+  };
+
 const setPeerRemoteDescription =
   (webRtcAnswer: WebRtcAnswer) =>
   (peers: Peer[]): Peer[] => {
@@ -123,5 +136,6 @@ export const peersActions = {
   addPeerTrack,
   deletePeer,
   setPeerConnected,
+  setPeerName,
   setPeerRemoteDescription,
 };
