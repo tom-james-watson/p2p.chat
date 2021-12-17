@@ -12,7 +12,11 @@ export default function PeerVideo(props: Props) {
 
   return (
     <GridVideo>
-      <>{peer.status === "connected" && <Video stream={peer.streams[0]} />}</>
+      <>
+        {peer.status === "connected" && peer.stream !== undefined && (
+          <Video stream={peer.stream} />
+        )}
+      </>
     </GridVideo>
   );
 }

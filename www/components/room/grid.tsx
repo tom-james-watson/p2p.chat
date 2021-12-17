@@ -59,8 +59,6 @@ export default function Grid() {
   cellWidth = cellWidth - (padding * rows - padding);
   cellHeight = cellHeight - (padding * rows - padding);
 
-  console.log({ cellWidth, cellHeight });
-
   const columnClassName = classNames(
     "flex items-center justify-center w-full h-full",
     {

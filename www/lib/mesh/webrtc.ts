@@ -29,7 +29,10 @@ export const createRtcPeerConnection = (
   });
 
   rtcPeerConnection.ontrack = (e) => {
-    setPeers(peersActions.addPeerTrack(sid, e.streams));
+    if (e.streams.length > 0) {
+      console.debug(`peer stream received ${sid}`);
+      setPeers(peersActions.addPeerTrack(sid, e.streams[0]));
+    }
   };
 
   rtcPeerConnection.onicecandidate = (e) => {

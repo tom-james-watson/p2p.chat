@@ -9,7 +9,7 @@ export type SetPeers = SetterOrUpdater<Peer[]>;
 export type Peer = {
   sid: string;
   rtcPeerConnection: RTCPeerConnection;
-  streams: readonly MediaStream[];
+  stream?: MediaStream;
 } & (
   | {
       status: "connecting";
@@ -29,10 +29,7 @@ export const peersState = atom<Peer[]>({
 const addPeer =
   (sid: string, rtcPeerConnection: RTCPeerConnection) =>
   (peers: Peer[]): Peer[] => {
-    return [
-      ...peers,
-      { rtcPeerConnection, sid, status: "connecting", streams: [] },
-    ];
+    return [...peers, { rtcPeerConnection, sid, status: "connecting" }];
   };
 
 const addPeerIceCandidate =
@@ -56,7 +53,7 @@ const addPeerIceCandidate =
   };
 
 const addPeerTrack =
-  (sid: string, streams: readonly MediaStream[]) =>
+  (sid: string, stream: MediaStream) =>
   (peers: Peer[]): Peer[] => {
     if (
       !peers.some((peer) => {
@@ -71,10 +68,7 @@ const addPeerTrack =
         return peer;
       }
 
-      return {
-        ...peer,
-        streams: [...peer.streams, ...streams],
-      };
+      return { ...peer, stream };
     });
   };
 
