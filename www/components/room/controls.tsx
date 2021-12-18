@@ -13,20 +13,16 @@ import { useRouter } from "next/router";
 
 interface ControlProps {
   children: React.ReactElement;
-  disabled?: boolean;
   text: string;
 }
 
 function Control(props: ControlProps) {
-  const { children, disabled = false, text } = props;
+  const { children, text } = props;
 
   return (
     <div className="flex flex-col items-center space-y-2 relative">
       {children}
       <div className="text-sm">{text}</div>
-      {disabled && (
-        <div className="bt-1 bg-slate-800 w-7 h-[2.5px] top-[10px] rounded-lg absolute rotate-45"></div>
-      )}
     </div>
   );
 }
@@ -95,7 +91,7 @@ export default function Controls() {
 
   return (
     <div className="flex items-center justify-center m-2 sm:m-4 space-x-8">
-      <Control disabled={!audioEnabled} text="Mic">
+      <Control text="Mic">
         <Button
           color={audioEnabled ? "slate" : "red"}
           icon={<MicrophoneIcon width={24} className={audioIconClassName} />}
@@ -103,7 +99,7 @@ export default function Controls() {
           square
         />
       </Control>
-      <Control disabled={!videoEnabled} text="Cam">
+      <Control text="Cam">
         <Button
           color={videoEnabled ? "slate" : "red"}
           icon={<VideoCameraIcon width={24} className={videoIconClassName} />}
