@@ -5,12 +5,14 @@ import {
   VideoCameraIcon,
 } from "@heroicons/react/outline";
 import Button from "../lib/button";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { localState } from "../../atoms/local";
 import classNames from "classnames";
 import assert from "assert";
 import { useRouter } from "next/router";
 import { getVideoAudioEnabled } from "../../lib/mesh/stream";
+import { peersState } from "../../atoms/peers";
+import { sendMessage } from "../../lib/mesh/data";
 
 interface ControlProps {
   children: React.ReactElement;
@@ -36,6 +38,7 @@ function Control(props: ControlProps) {
 export default function Controls() {
   const router = useRouter();
   const [local, setLocal] = useRecoilState(localState);
+  const peers = useRecoilValue(peersState);
 
   assert(local.status === "connecting" || local.status === "connected");
 
@@ -51,6 +54,16 @@ export default function Controls() {
   }, [router]);
 
   const handleToggleAudio = React.useCallback(() => {
+    peers.forEach((peer) => {
+      if (peer.channel !== undefined) {
+        sendMessage(peer.channel, {
+          type: "peer-state",
+          name: local.name,
+          audioEnabled: !audioEnabled,
+          videoEnabled,
+        });
+      }
+    });
     setLocal((local) => {
       assert(local.status === "connecting" || local.status === "connected");
       const stream = local.stream.stream;
@@ -58,14 +71,24 @@ export default function Controls() {
       const audioTracks = stream?.getAudioTracks();
 
       if (audioTracks !== undefined && audioTracks.length > 0) {
-        audioTracks[0].enabled = !audioTracks[0].enabled;
+        audioTracks[0].enabled = !audioEnabled;
       }
 
       return { ...local, stream: { ...local.stream, stream } };
     });
-  }, [setLocal]);
+  }, [audioEnabled, local.name, peers, setLocal, videoEnabled]);
 
   const handleToggleVideo = React.useCallback(() => {
+    peers.forEach((peer) => {
+      if (peer.channel !== undefined) {
+        sendMessage(peer.channel, {
+          type: "peer-state",
+          name: local.name,
+          audioEnabled,
+          videoEnabled: !videoEnabled,
+        });
+      }
+    });
     setLocal((local) => {
       assert(local.status === "connecting" || local.status === "connected");
       const stream = local.stream.stream;
@@ -73,12 +96,12 @@ export default function Controls() {
       const videoTracks = stream?.getVideoTracks();
 
       if (videoTracks !== undefined && videoTracks.length > 0) {
-        videoTracks[0].enabled = !videoTracks[0].enabled;
+        videoTracks[0].enabled = !videoEnabled;
       }
 
       return { ...local, stream: { ...local.stream, stream } };
     });
-  }, [setLocal]);
+  }, [audioEnabled, local.name, peers, setLocal, videoEnabled]);
 
   const videoIconClassName = classNames("absolute", {
     "text-slate-800": !videoEnabled,

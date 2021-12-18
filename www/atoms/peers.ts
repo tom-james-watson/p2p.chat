@@ -7,10 +7,13 @@ import {
 export type SetPeers = SetterOrUpdater<Peer[]>;
 
 export type Peer = {
-  sid: string;
-  rtcPeerConnection: RTCPeerConnection;
-  stream?: MediaStream;
+  channel?: RTCDataChannel;
   name?: string;
+  rtcPeerConnection: RTCPeerConnection;
+  sid: string;
+  stream?: MediaStream;
+  audioEnabled: boolean;
+  videoEnabled: boolean;
 } & (
   | {
       status: "connecting";
@@ -30,7 +33,16 @@ export const peersState = atom<Peer[]>({
 const addPeer =
   (sid: string, rtcPeerConnection: RTCPeerConnection) =>
   (peers: Peer[]): Peer[] => {
-    return [...peers, { rtcPeerConnection, sid, status: "connecting" }];
+    return [
+      ...peers,
+      {
+        rtcPeerConnection,
+        sid,
+        status: "connecting",
+        audioEnabled: false,
+        videoEnabled: false,
+      },
+    ];
   };
 
 const addPeerIceCandidate =
@@ -89,6 +101,18 @@ const deletePeer =
     return peers.filter((peer) => peer.sid !== sid);
   };
 
+const setPeerChannel =
+  (sid: string, channel: RTCDataChannel) =>
+  (peers: Peer[]): Peer[] => {
+    return peers.map((peer) => {
+      if (peer.sid !== sid) {
+        return peer;
+      }
+
+      return { ...peer, channel };
+    });
+  };
+
 const setPeerConnected =
   (sid: string) =>
   (peers: Peer[]): Peer[] => {
@@ -101,15 +125,15 @@ const setPeerConnected =
     });
   };
 
-const setPeerName =
-  (sid: string, name: string) =>
+const setPeerState =
+  (sid: string, name: string, audioEnabled: boolean, videoEnabled: boolean) =>
   (peers: Peer[]): Peer[] => {
     return peers.map((peer): Peer => {
       if (peer.sid !== sid) {
         return peer;
       }
 
-      return { ...peer, name };
+      return { ...peer, name, audioEnabled, videoEnabled };
     });
   };
 
@@ -135,7 +159,8 @@ export const peersActions = {
   addPeerIceCandidate,
   addPeerTrack,
   deletePeer,
+  setPeerChannel,
   setPeerConnected,
-  setPeerName,
+  setPeerState,
   setPeerRemoteDescription,
 };

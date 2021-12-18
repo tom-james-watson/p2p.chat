@@ -1,20 +1,36 @@
 import assert from "assert";
 import { Local } from "../../atoms/local";
 import { peersActions, SetPeers } from "../../atoms/peers";
+import { getVideoAudioEnabled } from "./stream";
 
-interface MessageName {
-  type: "name";
+interface MessagePeerState {
+  type: "peer-state";
   name: string;
+  audioEnabled: boolean;
+  videoEnabled: boolean;
 }
 
-export type Message = MessageName;
+export type Message = MessagePeerState;
 
-const onName = (sid: string, message: MessageName, setPeers: SetPeers) => {
-  console.debug(`received name sid=[${sid}] name=[${message.name}]`);
-  setPeers(peersActions.setPeerName(sid, message.name));
+const onPeerState = (
+  sid: string,
+  message: MessagePeerState,
+  setPeers: SetPeers
+) => {
+  console.debug(
+    `received peer state sid=[${sid}] name=[${message.name}] audioEnabled=[${message.audioEnabled}] videoEnabled=[${message.videoEnabled}]`
+  );
+  setPeers(
+    peersActions.setPeerState(
+      sid,
+      message.name,
+      message.audioEnabled,
+      message.videoEnabled
+    )
+  );
 };
 
-const sendMessage = (channel: RTCDataChannel, message: Message) => {
+export const sendMessage = (channel: RTCDataChannel, message: Message) => {
   channel.send(JSON.stringify(message));
 };
 
@@ -24,19 +40,32 @@ export const registerDataChannel = (
   local: Local,
   setPeers: SetPeers
 ): void => {
-  assert(local.status !== "requestingName");
+  assert(
+    local.status !== "requestingName" &&
+      local.status !== "requestingPermissions"
+  );
 
   channel.onopen = () => {
-    sendMessage(channel, { type: "name", name: local.name });
+    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(
+      local.stream.stream
+    );
+    sendMessage(channel, {
+      type: "peer-state",
+      name: local.name,
+      audioEnabled,
+      videoEnabled,
+    });
   };
 
   channel.onmessage = function (event) {
     const message: Message = JSON.parse(event.data);
 
     switch (message.type) {
-      case "name": {
-        onName(sid, message, setPeers);
+      case "peer-state": {
+        onPeerState(sid, message, setPeers);
       }
     }
   };
+
+  setPeers(peersActions.setPeerChannel(sid, channel));
 };

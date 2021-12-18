@@ -18,7 +18,7 @@ export default function PeerVideo(props: Props) {
     <GridVideo name={peer.name}>
       <>
         {peer.status === "connected" && peer.stream !== undefined && (
-          <Video stream={peer.stream} />
+          <Video videoDisabled={!peer.videoEnabled} stream={peer.stream} />
         )}
       </>
     </GridVideo>
