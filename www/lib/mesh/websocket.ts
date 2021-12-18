@@ -47,8 +47,8 @@ const onPeerConnect =
 const onPeerDisconnect = (setPeers: SetPeers) => (sid: string) => {
   console.debug(`peerDisconnect sid=${sid}`);
 
-  const rtcPeerConnection = mapGet(rtcPeerConnectionMap, sid);
-  rtcPeerConnection.close();
+  const rtcPeerConnection = rtcPeerConnectionMap.get(sid);
+  rtcPeerConnection?.close();
   rtcPeerConnectionMap.delete(sid);
 
   const rtcDataChannel = rtcDataChannelMap.get(sid);
