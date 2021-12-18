@@ -1,7 +1,6 @@
 import React from "react";
 import { Peer } from "../../atoms/peers";
 import GridVideo from "./grid-video";
-import Video from "./video";
 
 interface Props {
   peer: Peer;
@@ -10,17 +9,12 @@ interface Props {
 export default function PeerVideo(props: Props) {
   const { peer } = props;
 
-  // Note that waiting for peer.status to be "connected" means that we are
-  // waiting for ice negotiation to finish before displaying the video. If we
-  // see slowness on the video appearing, that is probably why and we can look
-  // into displaying the video earlier.
   return (
-    <GridVideo name={peer.name}>
-      <>
-        {peer.status === "connected" && peer.stream !== undefined && (
-          <Video videoDisabled={!peer.videoEnabled} stream={peer.stream} />
-        )}
-      </>
-    </GridVideo>
+    <GridVideo
+      loading={peer.status !== "connected"}
+      name={peer.name}
+      stream={peer.stream}
+      videoDisabled={!peer.videoEnabled}
+    />
   );
 }
