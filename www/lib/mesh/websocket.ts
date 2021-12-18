@@ -36,9 +36,9 @@ const onPeerConnect =
       setPeers,
       true
     );
+    rtcPeerConnectionMap.set(sid, rtcPeerConnection);
     const offerSdp = await rtcPeerConnection.createOffer();
     rtcPeerConnection.setLocalDescription(offerSdp);
-    rtcPeerConnectionMap.set(sid, rtcPeerConnection);
     setPeers(peersActions.addPeer(sid));
 
     socket.emit("webRtcOffer", { offerSdp, sid });
@@ -72,11 +72,11 @@ const onWebRtcOffer =
       setPeers,
       false
     );
+    rtcPeerConnectionMap.set(sid, rtcPeerConnection);
     setPeers(peersActions.addPeer(sid));
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
     const answerSdp = await rtcPeerConnection.createAnswer();
     rtcPeerConnection.setLocalDescription(answerSdp);
-    rtcPeerConnectionMap.set(sid, rtcPeerConnection);
 
     socket.emit("webRtcAnswer", { answerSdp, sid });
   };

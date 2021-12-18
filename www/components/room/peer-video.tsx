@@ -13,6 +13,7 @@ export default function PeerVideo(props: Props) {
 
   return (
     <GridVideo
+      audioDisabled={!peer.audioEnabled}
       loading={peer.status !== "connected"}
       name={peer.name}
       stream={stream}

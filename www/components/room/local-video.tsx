@@ -11,10 +11,11 @@ export default function LocalVideo() {
 
   assert(local.status === "connecting" || local.status === "connected");
   const stream = mapGet(streamMap, LocalStreamKey);
-  const { videoEnabled } = getVideoAudioEnabled(stream);
+  const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
 
   return (
     <GridVideo
+      audioDisabled={!audioEnabled}
       local
       name={`${local.name} (You)`}
       stream={stream}
