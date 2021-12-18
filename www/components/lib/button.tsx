@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React from "react";
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
-  color?: "indigo" | "slate";
+  color?: "indigo" | "slate" | "red";
   icon?: React.ReactElement;
   fill?: boolean;
   square?: boolean;
@@ -27,6 +27,7 @@ export default function Button(props: Props) {
       "bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700":
         color === "indigo",
       "bg-slate-700 hover:bg-slate-600 active:bg-slate-500": color === "slate",
+      "bg-red-500 hover:bg-red-600 active:bg-red-700": color === "red",
     }
   );
 
