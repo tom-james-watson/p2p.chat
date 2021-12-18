@@ -69,17 +69,17 @@ export default function Grid() {
   );
 
   const rowClassName = classNames("flex", {
-    "flex-row pb-1 sm:pb-2 last:pb-0 last:sm:pb-0": !isPortrait,
-    "flex-col pr-1 sm:pr-2 last:pr-0 last:sm:pb-0": isPortrait,
+    "flex-row pb-2 sm:pb-4 last:pb-0 last:sm:pb-0": !isPortrait,
+    "flex-col pr-2 sm:pr-4 last:pr-0 last:sm:pb-0": isPortrait,
   });
 
   const videoClassName = classNames("inline-block", {
-    "pr-1 sm:pr-2 last:pr-0 last:sm:pr-0": !isPortrait,
-    "pb-1 sm:pb-2 last:pb-0 last:sm:pb-0": isPortrait,
+    "pr-2 sm:pr-4 last:pr-0 last:sm:pr-0": !isPortrait,
+    "pb-2 sm:pb-4 last:pb-0 last:sm:pb-0": isPortrait,
   });
 
   return (
-    <div className="w-full h-full p-1 sm:p-2">
+    <div className="w-full h-full basis-full">
       <div ref={ref} className={columnClassName}>
         {videosRows.map((videosRow, index) => (
           <div key={`row-${index}`} className={rowClassName}>

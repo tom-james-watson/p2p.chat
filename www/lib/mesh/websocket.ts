@@ -82,8 +82,7 @@ export const createSocket = async (
   setLocal: SetLocal,
   setPeers: SetPeers
 ): Promise<void> => {
-  // const socket: Socket = io("http://localhost:8080");
-  const socket: Socket = io("http://192.168.1.93:8080");
+  const socket: Socket = io("http://localhost:8080");
 
   socketRef.current = socket;
 
