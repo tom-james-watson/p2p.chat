@@ -125,3 +125,25 @@ export const createLocalStream = async ({
     }
   }
 };
+
+export const getVideoAudioEnabled = (
+  stream: MediaStream | null
+): { audioEnabled: boolean; videoEnabled: boolean } => {
+  if (stream === null) {
+    return { audioEnabled: false, videoEnabled: false };
+  }
+
+  const videoTracks = stream.getVideoTracks();
+  const audioTracks = stream.getAudioTracks();
+
+  const videoEnabled =
+    videoTracks !== undefined &&
+    videoTracks.length > 0 &&
+    videoTracks[0].enabled;
+  const audioEnabled =
+    audioTracks !== undefined &&
+    audioTracks.length > 0 &&
+    audioTracks[0].enabled;
+
+  return { audioEnabled, videoEnabled };
+};

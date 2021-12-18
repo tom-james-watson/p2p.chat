@@ -10,6 +10,7 @@ import { localState } from "../../atoms/local";
 import classNames from "classnames";
 import assert from "assert";
 import { useRouter } from "next/router";
+import { getVideoAudioEnabled } from "../../lib/mesh/stream";
 
 interface ControlProps {
   children: React.ReactElement;
@@ -38,17 +39,9 @@ export default function Controls() {
 
   assert(local.status === "connecting" || local.status === "connected");
 
-  const stream = local.stream.stream;
-  const videoTracks = stream?.getVideoTracks();
-  const audioTracks = stream?.getAudioTracks();
-  const videoEnabled =
-    videoTracks !== undefined &&
-    videoTracks.length > 0 &&
-    videoTracks[0].enabled;
-  const audioEnabled =
-    audioTracks !== undefined &&
-    audioTracks.length > 0 &&
-    audioTracks[0].enabled;
+  const { audioEnabled, videoEnabled } = getVideoAudioEnabled(
+    local.stream.stream
+  );
 
   const handleLeave = React.useCallback(() => {
     router.push(

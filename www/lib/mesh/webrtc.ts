@@ -32,6 +32,9 @@ export const createRtcPeerConnection = (
   rtcPeerConnection.ontrack = (e) => {
     if (e.streams.length > 0) {
       console.debug(`peer stream received ${sid}`);
+      setInterval(() => {
+        console.log({ original: e.streams[0] });
+      }, 3000);
       setPeers(peersActions.addPeerTrack(sid, e.streams[0]));
     }
   };
