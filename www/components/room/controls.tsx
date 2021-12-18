@@ -9,6 +9,7 @@ import { useRecoilState } from "recoil";
 import { localState } from "../../atoms/local";
 import classNames from "classnames";
 import assert from "assert";
+import { useRouter } from "next/router";
 
 interface ControlProps {
   children: React.ReactElement;
@@ -27,6 +28,7 @@ function Control(props: ControlProps) {
 }
 
 export default function Controls() {
+  const router = useRouter();
   const [local, setLocal] = useRecoilState(localState);
 
   assert(local.status === "connecting" || local.status === "connected");
@@ -42,6 +44,13 @@ export default function Controls() {
     audioTracks !== undefined &&
     audioTracks.length > 0 &&
     audioTracks[0].enabled;
+
+  const handleLeave = React.useCallback(() => {
+    router.push(
+      `/goodbye?left=${router.query.roomCode}/${router.query.roomName}`,
+      "/goodbye"
+    );
+  }, [router]);
 
   const handleToggleAudio = React.useCallback(() => {
     setLocal((local) => {
@@ -102,6 +111,7 @@ export default function Controls() {
         <Button
           color="slate"
           icon={<PhoneIcon width={24} className="absolute text-red-500" />}
+          onClick={handleLeave}
           square
         />
       </Control>
