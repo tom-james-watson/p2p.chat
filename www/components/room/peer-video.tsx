@@ -1,5 +1,6 @@
 import React from "react";
 import { Peer } from "../../atoms/peers";
+import { streamMap } from "../../lib/mesh/maps";
 import GridVideo from "./grid-video";
 
 interface Props {
@@ -8,12 +9,13 @@ interface Props {
 
 export default function PeerVideo(props: Props) {
   const { peer } = props;
+  const stream = streamMap.get(peer.sid);
 
   return (
     <GridVideo
       loading={peer.status !== "connected"}
       name={peer.name}
-      stream={peer.stream}
+      stream={stream}
       videoDisabled={!peer.videoEnabled}
     />
   );

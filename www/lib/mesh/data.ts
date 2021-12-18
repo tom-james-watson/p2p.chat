@@ -1,6 +1,7 @@
 import assert from "assert";
-import { Local } from "../../atoms/local";
+import { Local, LocalStreamKey } from "../../atoms/local";
 import { peersActions, SetPeers } from "../../atoms/peers";
+import { mapGet, rtcDataChannelMap, streamMap } from "./maps";
 import { getVideoAudioEnabled } from "./stream";
 
 interface MessagePeerState {
@@ -46,9 +47,8 @@ export const registerDataChannel = (
   );
 
   channel.onopen = () => {
-    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(
-      local.stream.stream
-    );
+    const stream = mapGet(streamMap, LocalStreamKey);
+    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
     sendMessage(channel, {
       type: "peer-state",
       name: local.name,
@@ -67,5 +67,5 @@ export const registerDataChannel = (
     }
   };
 
-  setPeers(peersActions.setPeerChannel(sid, channel));
+  rtcDataChannelMap.set(sid, channel);
 };

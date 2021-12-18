@@ -3,7 +3,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/router";
 import { validateRoom } from "../../lib/rooms/room-encoding";
 import { createSocket, Socket } from "../../lib/mesh/websocket";
-import { localActions, localState } from "../../atoms/local";
+import { defaultLocalState, localState } from "../../atoms/local";
 import { defaultPeersState, peersState } from "../../atoms/peers";
 import { defaultRoomState, roomActions, roomState } from "../../atoms/room";
 import RequestName from "../../components/room/request-name";
@@ -11,6 +11,11 @@ import RequestPermission from "../../components/room/request-permission";
 import RequestDevices from "../../components/room/request-devices";
 import Loading from "../../components/room/loading";
 import Call from "../../components/room/call";
+import {
+  rtcDataChannelMap,
+  rtcPeerConnectionMap,
+  streamMap,
+} from "../../lib/mesh/maps";
 
 export default function Room() {
   const router = useRouter();
@@ -47,7 +52,29 @@ export default function Room() {
       // Reset app state
       setPeers(defaultPeersState);
       setRoom(defaultRoomState);
-      setLocal(localActions.cleanup(socketRef));
+      setLocal(defaultLocalState);
+
+      if (socketRef.current !== undefined) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        socketRef.current.disconnect();
+      }
+
+      streamMap.forEach((stream, key) => {
+        stream?.getTracks().forEach((track) => {
+          track.stop();
+        });
+        streamMap.delete(key);
+      });
+
+      rtcDataChannelMap.forEach((channel, sid) => {
+        channel.close();
+        rtcDataChannelMap.delete(sid);
+      });
+
+      rtcPeerConnectionMap.forEach((rtcPeerConnection, sid) => {
+        rtcPeerConnection.close();
+        rtcPeerConnectionMap.delete(sid);
+      });
     };
   }, [setLocal, setPeers, setRoom]);
 

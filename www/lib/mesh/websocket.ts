@@ -9,6 +9,12 @@ import {
 import { peersActions, SetPeers } from "../../atoms/peers";
 import { Local, localActions, SetLocal } from "../../atoms/local";
 import { createRtcPeerConnection } from "./webrtc";
+import {
+  mapGet,
+  rtcDataChannelMap,
+  rtcPeerConnectionMap,
+  streamMap,
+} from "./maps";
 
 export type Socket = IOSocket<ServerEvents, ClientEvents>;
 
@@ -32,13 +38,25 @@ const onPeerConnect =
     );
     const offerSdp = await rtcPeerConnection.createOffer();
     rtcPeerConnection.setLocalDescription(offerSdp);
-    setPeers(peersActions.addPeer(sid, rtcPeerConnection));
+    rtcPeerConnectionMap.set(sid, rtcPeerConnection);
+    setPeers(peersActions.addPeer(sid));
 
     socket.emit("webRtcOffer", { offerSdp, sid });
   };
 
 const onPeerDisconnect = (setPeers: SetPeers) => (sid: string) => {
   console.debug(`peerDisconnect sid=${sid}`);
+
+  const rtcPeerConnection = mapGet(rtcPeerConnectionMap, sid);
+  rtcPeerConnection.close();
+  rtcPeerConnectionMap.delete(sid);
+
+  const rtcDataChannel = rtcDataChannelMap.get(sid);
+  rtcDataChannel?.close();
+  rtcDataChannelMap.delete(sid);
+
+  streamMap.delete(sid);
+
   setPeers(peersActions.deletePeer(sid));
 };
 
@@ -54,26 +72,35 @@ const onWebRtcOffer =
       setPeers,
       false
     );
-    setPeers(peersActions.addPeer(sid, rtcPeerConnection));
+    setPeers(peersActions.addPeer(sid));
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(offerSdp));
     const answerSdp = await rtcPeerConnection.createAnswer();
     rtcPeerConnection.setLocalDescription(answerSdp);
+    rtcPeerConnectionMap.set(sid, rtcPeerConnection);
 
     socket.emit("webRtcAnswer", { answerSdp, sid });
   };
 
-const onWebRtcAnswer =
-  (socket: Socket, setPeers: SetPeers) => (webRtcAnswer: WebRtcAnswer) => {
-    console.debug(
-      `webRtcAnswer fromSid=${socket.id} toSid=${webRtcAnswer.sid}`
-    );
-    setPeers(peersActions.setPeerRemoteDescription(webRtcAnswer));
-  };
+const onWebRtcAnswer = (socket: Socket) => (webRtcAnswer: WebRtcAnswer) => {
+  console.debug(`webRtcAnswer fromSid=${socket.id} toSid=${webRtcAnswer.sid}`);
+  const rtcPeerConnection = mapGet(rtcPeerConnectionMap, webRtcAnswer.sid);
+  rtcPeerConnection.setRemoteDescription(
+    new RTCSessionDescription(webRtcAnswer.answerSdp)
+  );
+};
 
-const onWebRtcIceCandidate =
-  (setPeers: SetPeers) => (webRtcIceCandidate: WebRtcIceCandidate) => {
-    setPeers(peersActions.addPeerIceCandidate(webRtcIceCandidate));
-  };
+const onWebRtcIceCandidate = (webRtcIceCandidate: WebRtcIceCandidate) => {
+  const rtcPeerConnection = mapGet(
+    rtcPeerConnectionMap,
+    webRtcIceCandidate.sid
+  );
+  rtcPeerConnection.addIceCandidate(
+    new RTCIceCandidate({
+      sdpMLineIndex: webRtcIceCandidate.label,
+      candidate: webRtcIceCandidate.candidate,
+    })
+  );
+};
 
 export const createSocket = async (
   roomCode: string,
@@ -90,6 +117,6 @@ export const createSocket = async (
   socket.on("peerConnect", onPeerConnect(socket, local, setPeers));
   socket.on("peerDisconnect", onPeerDisconnect(setPeers));
   socket.on("webRtcOffer", onWebRtcOffer(socket, local, setPeers));
-  socket.on("webRtcAnswer", onWebRtcAnswer(socket, setPeers));
-  socket.on("webRtcIceCandidate", onWebRtcIceCandidate(setPeers));
+  socket.on("webRtcAnswer", onWebRtcAnswer(socket));
+  socket.on("webRtcIceCandidate", onWebRtcIceCandidate);
 };

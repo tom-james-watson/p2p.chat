@@ -1,19 +1,14 @@
-import assert from "assert";
 import React from "react";
-import { useRecoilValue } from "recoil";
-import { localState } from "../../atoms/local";
+import { LocalStreamKey } from "../../atoms/local";
+import { mapGet, streamMap } from "../../lib/mesh/maps";
 import Video from "./video";
 
 export default function LocalPreview() {
-  const local = useRecoilValue(localState);
-
-  assert(local.status === "requestingDevices");
+  const stream = mapGet(streamMap, LocalStreamKey);
 
   return (
     <div className="w-full h-48 bg-slate-900 rounded-md">
-      {local.stream.stream !== null && (
-        <Video local stream={local.stream.stream} />
-      )}
+      {stream !== null && <Video local stream={stream} />}
     </div>
   );
 }

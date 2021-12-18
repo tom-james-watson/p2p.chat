@@ -1,13 +1,3 @@
-export interface Stream {
-  stream: MediaStream | null;
-  audio: {
-    granted: boolean;
-  };
-  video: {
-    granted: boolean;
-  };
-}
-
 export interface Device {
   id: string;
   name: string;
@@ -20,8 +10,12 @@ export interface Devices {
   selectedVideo: Device | null;
 }
 
-export const stopStream = (stream: Stream) => {
-  stream.stream?.getTracks().forEach((track) => {
+export const stopStream = (stream: MediaStream | null) => {
+  if (stream === null) {
+    return;
+  }
+
+  stream.getTracks().forEach((track) => {
     track.stop();
   });
 };
@@ -78,7 +72,7 @@ export const createLocalStream = async ({
 }: {
   audioDeviceId?: string;
   videoDeviceId?: string;
-} = {}): Promise<Stream> => {
+} = {}): Promise<MediaStream | null> => {
   // const video = {
   //   facingMode: "user",
   //   // width: { min: 640, ideal: 1280, max: 1920 },
@@ -99,28 +93,21 @@ export const createLocalStream = async ({
 
   try {
     // Try and get video and audio
-    const stream = await getMediaStream({ video, audio });
-    return { stream, audio: { granted: true }, video: { granted: true } };
+    return await getMediaStream({ video, audio });
   } catch (err) {
     console.error(err);
     try {
       // Try just audio
-      const stream = await getMediaStream({ audio });
-      return { stream, audio: { granted: true }, video: { granted: false } };
+      return await getMediaStream({ audio });
     } catch (err) {
       console.error(err);
       try {
         // Try just video
-        const stream = await getMediaStream({ video });
-        return { stream, audio: { granted: false }, video: { granted: true } };
+        return await getMediaStream({ video });
       } catch (err) {
         console.error(err);
         // No stream
-        return {
-          stream: null,
-          audio: { granted: false },
-          video: { granted: false },
-        };
+        return null;
       }
     }
   }

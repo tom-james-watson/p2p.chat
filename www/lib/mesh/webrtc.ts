@@ -1,9 +1,10 @@
 import assert from "assert";
 import { Socket } from "socket.io-client";
 import { ClientEvents, ServerEvents } from "../../../lib/src/types/websockets";
-import { Local } from "../../atoms/local";
+import { Local, LocalStreamKey } from "../../atoms/local";
 import { peersActions, SetPeers } from "../../atoms/peers";
 import { registerDataChannel } from "./data";
+import { mapGet, streamMap } from "./maps";
 
 const iceServers = {
   iceServers: [
@@ -22,17 +23,15 @@ export const createRtcPeerConnection = (
   assert(local.status === "connecting");
 
   const rtcPeerConnection = new RTCPeerConnection(iceServers);
+  const stream = mapGet(streamMap, LocalStreamKey);
 
-  local.stream.stream?.getTracks().forEach((track) => {
-    if (local.stream.stream !== null) {
-      rtcPeerConnection.addTrack(track, local.stream.stream);
-    }
+  stream?.getTracks().forEach((track) => {
+    rtcPeerConnection.addTrack(track, stream);
   });
 
   rtcPeerConnection.ontrack = (e) => {
     if (e.streams.length > 0) {
-      console.debug(`peer stream received ${sid}`);
-      setPeers(peersActions.addPeerTrack(sid, e.streams[0]));
+      streamMap.set(sid, e.streams[0]);
     }
   };
 

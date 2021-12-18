@@ -1,21 +1,21 @@
 import { MicrophoneIcon, VideoCameraIcon } from "@heroicons/react/outline";
-import assert from "assert";
 import React from "react";
-import { useRecoilState } from "recoil";
-import { localActions, localState } from "../../atoms/local";
+import { useSetRecoilState } from "recoil";
+import { localActions, localState, LocalStreamKey } from "../../atoms/local";
+import { mapGet, streamMap } from "../../lib/mesh/maps";
 import {
   createLocalStream,
   Devices,
   getDevices,
+  getVideoAudioEnabled,
   stopStream,
-  Stream,
 } from "../../lib/mesh/stream";
 import Select from "../lib/select";
 import LocalPreview from "./local-preview";
 import PreForm from "./pre-form";
 
 export default function RequestDevices() {
-  const [local, setLocal] = useRecoilState(localState);
+  const setLocal = useSetRecoilState(localState);
   const [devices, setDevices] = React.useState<Devices>();
 
   React.useEffect(() => {
@@ -25,23 +25,25 @@ export default function RequestDevices() {
   }, []);
 
   const joinRoom = React.useCallback(async () => {
-    setLocal(localActions.setConnecting);
+    const stream = mapGet(streamMap, LocalStreamKey);
+    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
+    setLocal(localActions.setConnecting(audioEnabled, videoEnabled));
   }, [setLocal]);
 
   const handleDeviceChange = React.useCallback(
     async (
       deviceId: string | undefined,
-      cb: (devices: Devices) => Promise<Stream>
+      cb: (devices: Devices) => Promise<MediaStream | null>
     ) => {
       if (devices === undefined || deviceId === undefined) {
         return;
       }
 
-      assert(local.status === "requestingDevices");
-      stopStream(local.stream);
-      setLocal(localActions.updateStream(await cb(devices)));
+      const stream = mapGet(streamMap, LocalStreamKey);
+      stopStream(stream);
+      streamMap.set(LocalStreamKey, await cb(devices));
     },
-    [devices, local, setLocal]
+    [devices]
   );
 
   const handleAudioChange = React.useCallback(

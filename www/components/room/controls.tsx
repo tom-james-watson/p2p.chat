@@ -6,13 +6,14 @@ import {
 } from "@heroicons/react/outline";
 import Button from "../lib/button";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { localState } from "../../atoms/local";
+import { localActions, localState, LocalStreamKey } from "../../atoms/local";
 import classNames from "classnames";
 import assert from "assert";
 import { useRouter } from "next/router";
 import { getVideoAudioEnabled } from "../../lib/mesh/stream";
 import { peersState } from "../../atoms/peers";
 import { sendMessage } from "../../lib/mesh/data";
+import { mapGet, rtcDataChannelMap, streamMap } from "../../lib/mesh/maps";
 
 interface ControlProps {
   children: React.ReactElement;
@@ -39,12 +40,11 @@ export default function Controls() {
   const router = useRouter();
   const [local, setLocal] = useRecoilState(localState);
   const peers = useRecoilValue(peersState);
+  const stream = mapGet(streamMap, LocalStreamKey);
 
   assert(local.status === "connecting" || local.status === "connected");
 
-  const { audioEnabled, videoEnabled } = getVideoAudioEnabled(
-    local.stream.stream
-  );
+  const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
 
   const handleLeave = React.useCallback(() => {
     router.push(
@@ -55,8 +55,10 @@ export default function Controls() {
 
   const handleToggleAudio = React.useCallback(() => {
     peers.forEach((peer) => {
-      if (peer.channel !== undefined) {
-        sendMessage(peer.channel, {
+      const channel = rtcDataChannelMap.get(peer.sid);
+
+      if (channel !== undefined) {
+        sendMessage(channel, {
           type: "peer-state",
           name: local.name,
           audioEnabled: !audioEnabled,
@@ -64,24 +66,22 @@ export default function Controls() {
         });
       }
     });
-    setLocal((local) => {
-      assert(local.status === "connecting" || local.status === "connected");
-      const stream = local.stream.stream;
 
-      const audioTracks = stream?.getAudioTracks();
+    const audioTracks = stream?.getAudioTracks();
 
-      if (audioTracks !== undefined && audioTracks.length > 0) {
-        audioTracks[0].enabled = !audioEnabled;
-      }
+    if (audioTracks !== undefined && audioTracks.length > 0) {
+      audioTracks[0].enabled = !audioEnabled;
+    }
 
-      return { ...local, stream: { ...local.stream, stream } };
-    });
-  }, [audioEnabled, local.name, peers, setLocal, videoEnabled]);
+    setLocal(localActions.setAudioVideoEnabled(!audioEnabled, videoEnabled));
+  }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
 
   const handleToggleVideo = React.useCallback(() => {
     peers.forEach((peer) => {
-      if (peer.channel !== undefined) {
-        sendMessage(peer.channel, {
+      const channel = rtcDataChannelMap.get(peer.sid);
+
+      if (channel !== undefined) {
+        sendMessage(channel, {
           type: "peer-state",
           name: local.name,
           audioEnabled,
@@ -89,19 +89,15 @@ export default function Controls() {
         });
       }
     });
-    setLocal((local) => {
-      assert(local.status === "connecting" || local.status === "connected");
-      const stream = local.stream.stream;
 
-      const videoTracks = stream?.getVideoTracks();
+    const videoTracks = stream?.getVideoTracks();
 
-      if (videoTracks !== undefined && videoTracks.length > 0) {
-        videoTracks[0].enabled = !videoEnabled;
-      }
+    if (videoTracks !== undefined && videoTracks.length > 0) {
+      videoTracks[0].enabled = !videoEnabled;
+    }
 
-      return { ...local, stream: { ...local.stream, stream } };
-    });
-  }, [audioEnabled, local.name, peers, setLocal, videoEnabled]);
+    setLocal(localActions.setAudioVideoEnabled(audioEnabled, !videoEnabled));
+  }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
 
   const videoIconClassName = classNames("absolute", {
     "text-slate-800": !videoEnabled,
