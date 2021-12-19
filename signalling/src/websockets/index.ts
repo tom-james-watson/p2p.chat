@@ -68,8 +68,7 @@ const onConnection = (logger: Logger, server: Server) => (socket: Socket) => {
 export const createServer = (logger: Logger): Server => {
   const server = new IOServer<ClientEvents, ServerEvents>({
     cors: {
-      origin:
-        process.env.NODE_ENV === "development" ? "*" : "https://example.com",
+      origin: process.env.NODE_ENV === "development" ? "*" : "https://p2p.chat",
       methods: ["GET", "POST"],
     },
   });
