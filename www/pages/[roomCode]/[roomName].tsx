@@ -103,3 +103,10 @@ export default function Room() {
     </div>
   );
 }
+
+export async function getStaticPaths() {
+  return {
+    paths: [{ params: { roomCode: "roomCode", roomName: "roomName" } }],
+    fallback: true,
+  };
+}
