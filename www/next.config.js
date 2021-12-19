@@ -9,4 +9,5 @@ module.exports = withPlugins([withTM], {
     }
     return config;
   },
+  productionBrowserSourceMaps: true,
 });
