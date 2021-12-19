@@ -7,10 +7,7 @@ import { registerDataChannel } from "./data";
 import { mapGet, streamMap } from "./maps";
 
 const iceServers = {
-  iceServers: [
-    { urls: "stun:stun1.l.google.com:19302" },
-    { urls: "stun:stun2.l.google.com:19302" },
-  ],
+  iceServers: [{ urls: "stun:meet-jit-si-turnrelay.jitsi.net:443" }],
 };
 
 export const createRtcPeerConnection = (

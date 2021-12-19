@@ -32,8 +32,6 @@ export default function Room() {
         return;
       }
 
-      console.log({ router });
-
       const roomCode = router.query.roomCode as string;
       const roomName = router.query.roomName as string;
 
