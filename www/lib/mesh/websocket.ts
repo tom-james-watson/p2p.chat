@@ -15,6 +15,7 @@ import {
   rtcPeerConnectionMap,
   streamMap,
 } from "./maps";
+import assert from "assert";
 
 export type Socket = IOSocket<ServerEvents, ClientEvents>;
 
@@ -109,7 +110,8 @@ export const createSocket = async (
   setLocal: SetLocal,
   setPeers: SetPeers
 ): Promise<void> => {
-  const socket: Socket = io("http://localhost:8080");
+  assert(process.env.NEXT_PUBLIC_SIGNALLING_URL !== undefined);
+  const socket: Socket = io(process.env.NEXT_PUBLIC_SIGNALLING_URL);
 
   socketRef.current = socket;
 

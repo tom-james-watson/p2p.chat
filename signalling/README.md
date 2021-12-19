@@ -1,5 +1,7 @@
 # @p2p.chat/signalling
 
+@p2p.chat/signalling is a simple nodejs websocket signalling server written in Typescript.
+
 ## Requirements
 
 Install dependencies:

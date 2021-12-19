@@ -6,7 +6,7 @@
   "author": "Tom Watson <p2pchat@tomjwatson.com>",
   "license": "MIT",
   "scripts": {
-    "build": "next build",
+    "build": "next build && next export",
     "dev": "next dev",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css,scss,json,yml}\"",
     "lint": "eslint --max-warnings=0 --cache --ext .js,.ts,.tsx . && prettier --check \"**/*.{js,ts,tsx,css,scss,json,yml}\"",
