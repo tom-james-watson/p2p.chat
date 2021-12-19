@@ -22,7 +22,7 @@ function FeaturesContent({ children }: { children: React.ReactElement }) {
 
 function FeaturesStep({ children }: { children: React.ReactElement }) {
   return (
-    <div className="flex text-indigo-500 text-xl items-center justify-center space-x-2 ring ring-indigo-500 rounded-md px-2 py-2 sm:py-4 w-48 sm:w-60">
+    <div className="flex items-center justify-center space-x-2 font-medium text-indigo-500 text-xl ring ring-indigo-500 rounded-md px-2 py-2 sm:py-4 w-48 sm:w-60">
       {children}
     </div>
   );

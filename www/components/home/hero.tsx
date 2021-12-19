@@ -6,9 +6,9 @@ export default function Hero() {
   return (
     <div className="p-4 py-32 text-center hero">
       <h1 className="mb-8 text-5xl sm:text-6xl font-extrabold tracking-tight">
-        <span className="">p2p</span>
+        p2p
         <span className="text-yellow-500 mx-0.5">.</span>
-        <span className="">chat</span>
+        chat
       </h1>
       <h2 className="mb-24 text-slate-300 text-2xl sm:text-3xl font-extrabold tracking-tight">
         <div className="inline-block">No logins.</div>&nbsp;
