@@ -33,5 +33,3 @@ npm run build
 ```
 
 Then simply serve the site from the built `out/` directory.
-
-You will need to set up a redirect rule to rewrite all requests to `/*/*` to `/roomCode/roomName`, which is a page that will be exported by the static site build and can be safely used as the base HTML for all rooms. The specifics of setting that up will depend on the hosting provider.

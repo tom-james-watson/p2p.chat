@@ -9,12 +9,4 @@ module.exports = withPlugins([withTM], {
     }
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: "/:roomCode*/:roomName*",
-        destination: "/roomCode/roomName",
-      },
-    ];
-  },
 });

@@ -32,6 +32,8 @@ export default function Room() {
         return;
       }
 
+      console.log({ router });
+
       const roomCode = router.query.roomCode as string;
       const roomName = router.query.roomName as string;
 
@@ -44,7 +46,7 @@ export default function Room() {
 
       setRoom(roomActions.setReady(roomName));
     })();
-  }, [router.isReady, router.query, setRoom]);
+  }, [router, setRoom]);
 
   // Clean up on unmount, which only happens on navigating to another page
   React.useEffect(() => {
@@ -102,19 +104,4 @@ export default function Room() {
       )}
     </div>
   );
-}
-
-// This is a bit of a hack to enable us to use dynamic paths on a static site.
-// This works by rendering out a /roomCode/roomName url at build time, and then
-// having the static site provider rewrite all requests to /*/* to
-// /roomCode/roomName.
-export async function getStaticProps() {
-  return { props: {} };
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: [{ params: { roomCode: "roomCode", roomName: "roomName" } }],
-    fallback: false,
-  };
 }
