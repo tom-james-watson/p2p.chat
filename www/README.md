@@ -22,7 +22,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Deployment
 
-@p2p.chat/www can be deployed as a simple static website given it has no server component. It can be easily deployed for free on static site hosting providers such as https://www.netlify.com.
+@p2p.chat/www can be deployed as a simple static website given it has no server component. It can be easily deployed for free on static site hosting providers such as https://www.render.com or https://www.netlify.com.
 
 Set the `NEXT_PUBLIC_SIGNALLING_URL` environment variable to the URL of your [signalling](../signalling) server.
 
@@ -33,3 +33,5 @@ npm run build
 ```
 
 Then simply serve the site from the built `out/` directory.
+
+You will need to set up a redirect rule to rewrite all requests to `/*/*` to `/roomCode/roomName`, which is a page that will be exported by the static site build and can be safely used as the base HTML for all rooms. The specifics of setting that up will depend on the hosting provider.
