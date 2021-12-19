@@ -104,9 +104,17 @@ export default function Room() {
   );
 }
 
+// This is a bit of a hack to enable us to use dynamic paths on a static site.
+// This works by rendering out a /roomCode/roomName url at build time, and then
+// having the static site provider rewrite all requests to /*/* to
+// /roomCode/roomName.
+export async function getStaticProps() {
+  return { props: {} };
+}
+
 export async function getStaticPaths() {
   return {
     paths: [{ params: { roomCode: "roomCode", roomName: "roomName" } }],
-    fallback: true,
+    fallback: false,
   };
 }
