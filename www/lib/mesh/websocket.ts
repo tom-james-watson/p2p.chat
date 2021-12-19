@@ -30,6 +30,11 @@ const onPeerConnect =
   (socket: Socket, local: Local, setPeers: SetPeers) => async (sid: string) => {
     console.debug(`peerConnect sid=${sid}`);
 
+    if (rtcPeerConnectionMap.get(sid)) {
+      console.warn("Received connect from known peer");
+      return;
+    }
+
     const rtcPeerConnection = createRtcPeerConnection(
       socket,
       local,
