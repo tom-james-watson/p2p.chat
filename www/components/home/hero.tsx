@@ -5,16 +5,16 @@ import CreateRoom from "./create-room";
 export default function Hero() {
   return (
     <div className="p-4 py-32 text-center hero">
-      <h1 className="mb-8 text-6xl font-bold">
+      <h1 className="mb-8 text-5xl sm:text-6xl font-extrabold tracking-tight">
         <span className="">p2p</span>
         <span className="text-yellow-500 mx-0.5">.</span>
         <span className="">chat</span>
       </h1>
-      <div className="text-3xl mb-24 font-medium text-slate-300">
+      <h2 className="mb-24 text-slate-300 text-2xl sm:text-3xl font-extrabold tracking-tight">
         <div className="inline-block">No logins.</div>&nbsp;
         <div className="inline-block">No tracking.</div>&nbsp;
         <div className="inline-block">No nonsense.</div>
-      </div>
+      </h2>
       <CreateRoom />
       <div>
         <GitHubButton

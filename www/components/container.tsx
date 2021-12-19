@@ -8,8 +8,8 @@ export default function Container(props: Props) {
   const { children } = props;
 
   return (
-    <section className="p-20">
-      <div className="max-w-screen-md">{children}</div>
+    <section className="py-20 px-4 sm:px-20">
+      <div className="max-w-screen-md m-auto">{children}</div>
     </section>
   );
 }
