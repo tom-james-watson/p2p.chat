@@ -18,10 +18,10 @@ export default function Hero() {
       <CreateRoom />
       <div>
         <GitHubButton
-          href="https://github.com/tom-james-watson/breaktimer-app"
+          href="https://github.com/tom-james-watson/p2p.chat"
           data-size="large"
           data-show-count="true"
-          aria-label="Star tom-james-watson/breaktimer-app on GitHub"
+          aria-label="Star tom-james-watson/p2p.chat on GitHub"
         >
           Star
         </GitHubButton>
