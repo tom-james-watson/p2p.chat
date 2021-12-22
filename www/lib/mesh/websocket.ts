@@ -95,23 +95,31 @@ const onWebRtcAnswer = (socket: Socket) => (webRtcAnswer: WebRtcAnswer) => {
   );
 };
 
-const onWebRtcIceCandidate = (webRtcIceCandidate: WebRtcIceCandidate) => {
-  const rtcPeerConnection = mapGet(
-    rtcPeerConnectionMap,
-    webRtcIceCandidate.sid
-  );
-  console.debug(
-    "received ice candidate",
-    webRtcIceCandidate.candidate,
-    rtcPeerConnection.iceConnectionState
-  );
-  rtcPeerConnection.addIceCandidate(
-    new RTCIceCandidate({
-      sdpMLineIndex: webRtcIceCandidate.label,
-      candidate: webRtcIceCandidate.candidate,
-    })
-  );
-};
+const onWebRtcIceCandidate =
+  (setPeers: SetPeers) => (webRtcIceCandidate: WebRtcIceCandidate) => {
+    const rtcPeerConnection = mapGet(
+      rtcPeerConnectionMap,
+      webRtcIceCandidate.sid
+    );
+    console.debug(
+      "received ice candidate",
+      webRtcIceCandidate.candidate,
+      rtcPeerConnection.iceConnectionState
+    );
+    rtcPeerConnection.addIceCandidate(
+      new RTCIceCandidate({
+        sdpMLineIndex: webRtcIceCandidate.label,
+        candidate: webRtcIceCandidate.candidate,
+      })
+    );
+
+    if (
+      rtcPeerConnection.iceConnectionState === "connected" ||
+      rtcPeerConnection.iceConnectionState === "completed"
+    ) {
+      setPeers(peersActions.setPeerConnected(webRtcIceCandidate.sid));
+    }
+  };
 
 export const createSocket = async (
   roomCode: string,
@@ -130,5 +138,5 @@ export const createSocket = async (
   socket.on("peerDisconnect", onPeerDisconnect(setPeers));
   socket.on("webRtcOffer", onWebRtcOffer(socket, local, setPeers));
   socket.on("webRtcAnswer", onWebRtcAnswer(socket));
-  socket.on("webRtcIceCandidate", onWebRtcIceCandidate);
+  socket.on("webRtcIceCandidate", onWebRtcIceCandidate(setPeers));
 };

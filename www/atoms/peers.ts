@@ -53,6 +53,8 @@ const deletePeer =
 const setPeerConnected =
   (sid: string) =>
   (peers: Peer[]): Peer[] => {
+    console.debug(`peer fully connected ${sid}`);
+
     return peers.map((peer): Peer => {
       if (peer.sid !== sid) {
         return peer;

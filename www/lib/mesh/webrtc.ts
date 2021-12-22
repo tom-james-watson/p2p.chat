@@ -53,7 +53,6 @@ export const createRtcPeerConnection = (
       rtcPeerConnection.iceConnectionState === "connected" ||
       rtcPeerConnection.iceConnectionState === "completed"
     ) {
-      console.debug(`peer fully connected ${sid}`);
       setPeers(peersActions.setPeerConnected(sid));
     }
   };
