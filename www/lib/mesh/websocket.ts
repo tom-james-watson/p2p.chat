@@ -100,6 +100,11 @@ const onWebRtcIceCandidate = (webRtcIceCandidate: WebRtcIceCandidate) => {
     rtcPeerConnectionMap,
     webRtcIceCandidate.sid
   );
+  console.debug(
+    "received ice candidate",
+    webRtcIceCandidate.candidate,
+    rtcPeerConnection.iceConnectionState
+  );
   rtcPeerConnection.addIceCandidate(
     new RTCIceCandidate({
       sdpMLineIndex: webRtcIceCandidate.label,

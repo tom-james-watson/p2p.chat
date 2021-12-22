@@ -36,6 +36,11 @@ export const createRtcPeerConnection = (
   };
 
   rtcPeerConnection.onicecandidate = (e) => {
+    console.debug(
+      "ice candidate",
+      e.candidate?.candidate,
+      rtcPeerConnection.iceConnectionState
+    );
     if (e.candidate !== null) {
       socket.emit("webRtcIceCandidate", {
         sid,
