@@ -14,7 +14,7 @@
     "test": "npm t"
   },
   "dependencies": {
-    "socket.io": "^4.4.0",
+    "socket.io": "^4.5.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {
