@@ -36,7 +36,7 @@ function Control(props: ControlProps) {
   );
 }
 
-function AudioControl() {
+function TrackControl(track: "video" | "audio") {
   const [local, setLocal] = useRecoilState(localState);
   const peers = useRecoilValue(peersState);
   const stream = mapGet(streamMap, LocalStreamKey);
@@ -44,7 +44,7 @@ function AudioControl() {
   assert(local.status === "connecting" || local.status === "connected");
 
   const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
-  const enabled = videoEnabled;
+  const enabled = track === "audio" ? audioEnabled : videoEnabled;
 
   const handleToggle = React.useCallback(() => {
     peers.forEach((peer) => {
@@ -54,19 +54,25 @@ function AudioControl() {
         sendMessage(channel, {
           type: "peer-state",
           name: local.name,
-          audioEnabled: !audioEnabled,
-          videoEnabled,
+          audioEnabled: track === "audio" ? !audioEnabled : audioEnabled,
+          videoEnabled: track === "video" ? !videoEnabled : videoEnabled,
         });
       }
     });
 
-    const tracks = stream?.getAudioTracks();
+    const tracks =
+      track === "audio" ? stream?.getAudioTracks() : stream?.getVideoTracks();
 
     if (tracks !== undefined && tracks.length > 0) {
       tracks[0].enabled = !enabled;
     }
 
-    setLocal(localActions.setAudioVideoEnabled(!audioEnabled, videoEnabled));
+    setLocal(
+      localActions.setAudioVideoEnabled(
+        track === "audio" ? !audioEnabled : audioEnabled,
+        track === "video" ? !videoEnabled : videoEnabled
+      )
+    );
   }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
 
   const iconClassName = classNames("absolute", {
@@ -74,10 +80,16 @@ function AudioControl() {
   });
 
   return (
-    <Control disabled={!enabled} text="Mic">
+    <Control disabled={!enabled} text={track === "audio" ? "Mic" : "Cam"}>
       <Button
         color={enabled ? "slate" : "red"}
-        icon={<MicrophoneIcon width={24} className={iconClassName} />}
+        icon={
+          track === "audio" ? (
+            <MicrophoneIcon width={24} className={iconClassName} />
+          ) : (
+            <VideoCameraIcon width={24} className={iconClassName} />
+          )
+        }
         onClick={handleToggle}
         square
       />
@@ -85,53 +97,12 @@ function AudioControl() {
   );
 }
 
+function AudioControl() {
+  return TrackControl("audio");
+}
+
 function VideoControl() {
-  const [local, setLocal] = useRecoilState(localState);
-  const peers = useRecoilValue(peersState);
-  const stream = mapGet(streamMap, LocalStreamKey);
-
-  assert(local.status === "connecting" || local.status === "connected");
-
-  const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
-  const enabled = videoEnabled;
-
-  const handleToggle = React.useCallback(() => {
-    peers.forEach((peer) => {
-      const channel = rtcDataChannelMap.get(peer.sid);
-
-      if (channel !== undefined) {
-        sendMessage(channel, {
-          type: "peer-state",
-          name: local.name,
-          audioEnabled,
-          videoEnabled: !videoEnabled,
-        });
-      }
-    });
-
-    const tracks = stream?.getVideoTracks();
-
-    if (tracks !== undefined && tracks.length > 0) {
-      tracks[0].enabled = !enabled;
-    }
-
-    setLocal(localActions.setAudioVideoEnabled(audioEnabled, !videoEnabled));
-  }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
-
-  const iconClassName = classNames("absolute", {
-    "text-slate-800": !enabled,
-  });
-
-  return (
-    <Control disabled={!enabled} text="Cam">
-      <Button
-        color={enabled ? "slate" : "red"}
-        icon={<VideoCameraIcon width={24} className={iconClassName} />}
-        onClick={handleToggle}
-        square
-      />
-    </Control>
-  );
+  return TrackControl("video");
 }
 
 export default function Controls() {
