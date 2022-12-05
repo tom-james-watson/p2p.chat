@@ -36,8 +36,7 @@ function Control(props: ControlProps) {
   );
 }
 
-export default function Controls() {
-  const router = useRouter();
+function AudioControl() {
   const [local, setLocal] = useRecoilState(localState);
   const peers = useRecoilValue(peersState);
   const stream = mapGet(streamMap, LocalStreamKey);
@@ -45,13 +44,6 @@ export default function Controls() {
   assert(local.status === "connecting" || local.status === "connected");
 
   const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
-
-  const handleLeave = React.useCallback(() => {
-    router.push(
-      `/goodbye?left=${router.query.roomCode}/${router.query.roomName}`,
-      "/goodbye"
-    );
-  }, [router]);
 
   const handleToggleAudio = React.useCallback(() => {
     peers.forEach((peer) => {
@@ -75,6 +67,31 @@ export default function Controls() {
 
     setLocal(localActions.setAudioVideoEnabled(!audioEnabled, videoEnabled));
   }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
+
+  const audioIconClassName = classNames("absolute", {
+    "text-slate-800": !audioEnabled,
+  });
+
+  return (
+    <Control disabled={!audioEnabled} text="Mic">
+      <Button
+        color={audioEnabled ? "slate" : "red"}
+        icon={<MicrophoneIcon width={24} className={audioIconClassName} />}
+        onClick={handleToggleAudio}
+        square
+      />
+    </Control>
+  );
+}
+
+function VideoControl() {
+  const [local, setLocal] = useRecoilState(localState);
+  const peers = useRecoilValue(peersState);
+  const stream = mapGet(streamMap, LocalStreamKey);
+
+  assert(local.status === "connecting" || local.status === "connected");
+
+  const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
 
   const handleToggleVideo = React.useCallback(() => {
     peers.forEach((peer) => {
@@ -102,28 +119,33 @@ export default function Controls() {
   const videoIconClassName = classNames("absolute", {
     "text-slate-800": !videoEnabled,
   });
-  const audioIconClassName = classNames("absolute", {
-    "text-slate-800": !audioEnabled,
-  });
+  
+  return (
+    <Control disabled={!videoEnabled} text="Cam">
+      <Button
+        color={videoEnabled ? "slate" : "red"}
+        icon={<VideoCameraIcon width={24} className={videoIconClassName} />}
+        onClick={handleToggleVideo}
+        square
+      />
+    </Control>
+  );
+}
+
+export default function Controls() {
+  const router = useRouter();
+
+  const handleLeave = React.useCallback(() => {
+    router.push(
+      `/goodbye?left=${router.query.roomCode}/${router.query.roomName}`,
+      "/goodbye"
+    );
+  }, [router]);
 
   return (
     <div className="flex items-center justify-center m-2 sm:m-4 space-x-8">
-      <Control disabled={!audioEnabled} text="Mic">
-        <Button
-          color={audioEnabled ? "slate" : "red"}
-          icon={<MicrophoneIcon width={24} className={audioIconClassName} />}
-          onClick={handleToggleAudio}
-          square
-        />
-      </Control>
-      <Control disabled={!videoEnabled} text="Cam">
-        <Button
-          color={videoEnabled ? "slate" : "red"}
-          icon={<VideoCameraIcon width={24} className={videoIconClassName} />}
-          onClick={handleToggleVideo}
-          square
-        />
-      </Control>
+      <AudioControl />
+      <VideoControl />
       <Control text="Leave">
         <Button
           color="slate"
