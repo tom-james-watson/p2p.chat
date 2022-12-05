@@ -44,8 +44,9 @@ function AudioControl() {
   assert(local.status === "connecting" || local.status === "connected");
 
   const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
+  const enabled = videoEnabled;
 
-  const handleToggleAudio = React.useCallback(() => {
+  const handleToggle = React.useCallback(() => {
     peers.forEach((peer) => {
       const channel = rtcDataChannelMap.get(peer.sid);
 
@@ -59,25 +60,25 @@ function AudioControl() {
       }
     });
 
-    const audioTracks = stream?.getAudioTracks();
+    const tracks = stream?.getAudioTracks();
 
-    if (audioTracks !== undefined && audioTracks.length > 0) {
-      audioTracks[0].enabled = !audioEnabled;
+    if (tracks !== undefined && tracks.length > 0) {
+      tracks[0].enabled = !enabled;
     }
 
     setLocal(localActions.setAudioVideoEnabled(!audioEnabled, videoEnabled));
   }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
 
-  const audioIconClassName = classNames("absolute", {
-    "text-slate-800": !audioEnabled,
+  const iconClassName = classNames("absolute", {
+    "text-slate-800": !enabled,
   });
 
   return (
-    <Control disabled={!audioEnabled} text="Mic">
+    <Control disabled={!enabled} text="Mic">
       <Button
-        color={audioEnabled ? "slate" : "red"}
-        icon={<MicrophoneIcon width={24} className={audioIconClassName} />}
-        onClick={handleToggleAudio}
+        color={enabled ? "slate" : "red"}
+        icon={<MicrophoneIcon width={24} className={iconClassName} />}
+        onClick={handleToggle}
         square
       />
     </Control>
@@ -92,8 +93,9 @@ function VideoControl() {
   assert(local.status === "connecting" || local.status === "connected");
 
   const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
+  const enabled = videoEnabled;
 
-  const handleToggleVideo = React.useCallback(() => {
+  const handleToggle = React.useCallback(() => {
     peers.forEach((peer) => {
       const channel = rtcDataChannelMap.get(peer.sid);
 
@@ -107,25 +109,25 @@ function VideoControl() {
       }
     });
 
-    const videoTracks = stream?.getVideoTracks();
+    const tracks = stream?.getVideoTracks();
 
-    if (videoTracks !== undefined && videoTracks.length > 0) {
-      videoTracks[0].enabled = !videoEnabled;
+    if (tracks !== undefined && tracks.length > 0) {
+      tracks[0].enabled = !enabled;
     }
 
     setLocal(localActions.setAudioVideoEnabled(audioEnabled, !videoEnabled));
   }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
 
-  const videoIconClassName = classNames("absolute", {
-    "text-slate-800": !videoEnabled,
+  const iconClassName = classNames("absolute", {
+    "text-slate-800": !enabled,
   });
-  
+
   return (
-    <Control disabled={!videoEnabled} text="Cam">
+    <Control disabled={!enabled} text="Cam">
       <Button
-        color={videoEnabled ? "slate" : "red"}
-        icon={<VideoCameraIcon width={24} className={videoIconClassName} />}
-        onClick={handleToggleVideo}
+        color={enabled ? "slate" : "red"}
+        icon={<VideoCameraIcon width={24} className={iconClassName} />}
+        onClick={handleToggle}
         square
       />
     </Control>
