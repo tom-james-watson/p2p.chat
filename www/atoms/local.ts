@@ -44,7 +44,11 @@ export const localState = atom<Local>({
 const setAudioVideoEnabled =
   (audioEnabled: boolean, videoEnabled: boolean) =>
   (local: Local): Local => {
-    assert(local.status === "connecting" || local.status === "connected");
+    assert(
+      local.status === "requestingDevices" ||
+        local.status === "connecting" ||
+        local.status === "connected"
+    );
     return { ...local, audioEnabled, videoEnabled };
   };
 

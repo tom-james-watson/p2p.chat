@@ -11,6 +11,7 @@ import {
   stopStream,
 } from "../../lib/mesh/stream";
 import Select from "../lib/select";
+import { AudioControl, VideoControl } from "./controls";
 import LocalPreview from "./local-preview";
 import PreForm from "./pre-form";
 
@@ -108,6 +109,7 @@ export default function RequestDevices() {
             }
             setValue={handleAudioChange}
           />
+          <AudioControl />
           <Select
             id="video-select"
             fallback="No cameras found"
@@ -131,6 +133,7 @@ export default function RequestDevices() {
             }
             setValue={handleVideoChange}
           />
+          <VideoControl />
         </>
       }
       handleSubmit={joinRoom}

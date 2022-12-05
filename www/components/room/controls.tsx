@@ -41,7 +41,11 @@ function TrackControl(track: "video" | "audio") {
   const peers = useRecoilValue(peersState);
   const stream = mapGet(streamMap, LocalStreamKey);
 
-  assert(local.status === "connecting" || local.status === "connected");
+  assert(
+    local.status === "requestingDevices" ||
+      local.status === "connecting" ||
+      local.status === "connected"
+  );
 
   const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
   const enabled = track === "audio" ? audioEnabled : videoEnabled;
@@ -97,11 +101,11 @@ function TrackControl(track: "video" | "audio") {
   );
 }
 
-function AudioControl() {
+export function AudioControl() {
   return TrackControl("audio");
 }
 
-function VideoControl() {
+export function VideoControl() {
   return TrackControl("video");
 }
 
