@@ -25,9 +25,7 @@ export default function RequestDevices() {
   }, []);
 
   const joinRoom = React.useCallback(async () => {
-    const stream = mapGet(streamMap, LocalStreamKey);
-    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
-    setLocal(localActions.setConnecting(audioEnabled, videoEnabled));
+    setLocal(localActions.setConnecting);
   }, [setLocal]);
 
   const handleDeviceChange = React.useCallback(
