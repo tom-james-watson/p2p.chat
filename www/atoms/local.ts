@@ -16,6 +16,8 @@ export type Local =
   | {
       status: "requestingDevices";
       name: string;
+      audioEnabled: boolean;
+      videoEnabled: boolean;
     }
   | {
       status: "connecting";
@@ -42,21 +44,30 @@ export const localState = atom<Local>({
 const setAudioVideoEnabled =
   (audioEnabled: boolean, videoEnabled: boolean) =>
   (local: Local): Local => {
-    assert(local.status === "connecting" || local.status === "connected");
+    assert(
+      local.status === "requestingDevices" ||
+        local.status === "connecting" ||
+        local.status === "connected"
+    );
     return { ...local, audioEnabled, videoEnabled };
   };
 
-const setConnecting =
+const setConnecting = (local: Local): Local => {
+  assert(local.status === "requestingDevices");
+  return { ...local, status: "connecting" };
+};
+
+const setRequestingDevices =
   (audioEnabled: boolean, videoEnabled: boolean) =>
   (local: Local): Local => {
-    assert(local.status === "requestingDevices");
-    return { ...local, status: "connecting", audioEnabled, videoEnabled };
+    assert(local.status === "requestingPermissions");
+    return {
+      ...local,
+      status: "requestingDevices",
+      audioEnabled,
+      videoEnabled,
+    };
   };
-
-const setRequestingDevices = (local: Local): Local => {
-  assert(local.status === "requestingPermissions");
-  return { ...local, status: "requestingDevices" };
-};
 
 const setRequestingPermissions =
   (name: string) =>

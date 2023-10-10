@@ -2,7 +2,7 @@ import React from "react";
 import { useSetRecoilState } from "recoil";
 import { localActions, localState, LocalStreamKey } from "../../atoms/local";
 import { streamMap } from "../../lib/mesh/maps";
-import { createLocalStream } from "../../lib/mesh/stream";
+import { createLocalStream, getVideoAudioEnabled } from "../../lib/mesh/stream";
 import PreForm from "./pre-form";
 
 export default function RequestPermission() {
@@ -11,7 +11,8 @@ export default function RequestPermission() {
   const requestPermissions = React.useCallback(async () => {
     const stream = await createLocalStream();
     streamMap.set(LocalStreamKey, stream);
-    setLocal(localActions.setRequestingDevices);
+    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
+    setLocal(localActions.setRequestingDevices(audioEnabled, videoEnabled));
   }, [setLocal]);
 
   return (

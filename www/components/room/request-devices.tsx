@@ -11,6 +11,7 @@ import {
   stopStream,
 } from "../../lib/mesh/stream";
 import Select from "../lib/select";
+import { AudioControl, VideoControl } from "./controls";
 import LocalPreview from "./local-preview";
 import PreForm from "./pre-form";
 
@@ -25,9 +26,7 @@ export default function RequestDevices() {
   }, []);
 
   const joinRoom = React.useCallback(async () => {
-    const stream = mapGet(streamMap, LocalStreamKey);
-    const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
-    setLocal(localActions.setConnecting(audioEnabled, videoEnabled));
+    setLocal(localActions.setConnecting);
   }, [setLocal]);
 
   const handleDeviceChange = React.useCallback(
@@ -110,6 +109,7 @@ export default function RequestDevices() {
             }
             setValue={handleAudioChange}
           />
+          <AudioControl />
           <Select
             id="video-select"
             fallback="No cameras found"
@@ -133,6 +133,7 @@ export default function RequestDevices() {
             }
             setValue={handleVideoChange}
           />
+          <VideoControl />
         </>
       }
       handleSubmit={joinRoom}

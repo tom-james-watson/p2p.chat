@@ -36,15 +36,81 @@ function Control(props: ControlProps) {
   );
 }
 
-export default function Controls() {
-  const router = useRouter();
+function TrackControl(track: "video" | "audio") {
   const [local, setLocal] = useRecoilState(localState);
   const peers = useRecoilValue(peersState);
   const stream = mapGet(streamMap, LocalStreamKey);
 
-  assert(local.status === "connecting" || local.status === "connected");
+  assert(
+    local.status === "requestingDevices" ||
+      local.status === "connecting" ||
+      local.status === "connected"
+  );
 
   const { audioEnabled, videoEnabled } = getVideoAudioEnabled(stream);
+  const enabled = track === "audio" ? audioEnabled : videoEnabled;
+
+  const handleToggle = React.useCallback(() => {
+    peers.forEach((peer) => {
+      const channel = rtcDataChannelMap.get(peer.sid);
+
+      if (channel !== undefined) {
+        sendMessage(channel, {
+          type: "peer-state",
+          name: local.name,
+          audioEnabled: track === "audio" ? !audioEnabled : audioEnabled,
+          videoEnabled: track === "video" ? !videoEnabled : videoEnabled,
+        });
+      }
+    });
+
+    const tracks =
+      track === "audio" ? stream?.getAudioTracks() : stream?.getVideoTracks();
+
+    if (tracks !== undefined && tracks.length > 0) {
+      tracks[0].enabled = !enabled;
+    }
+
+    setLocal(
+      localActions.setAudioVideoEnabled(
+        track === "audio" ? !audioEnabled : audioEnabled,
+        track === "video" ? !videoEnabled : videoEnabled
+      )
+    );
+  }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
+
+  const iconClassName = classNames("absolute", {
+    "text-slate-800": !enabled,
+  });
+
+  return (
+    <Control disabled={!enabled} text={track === "audio" ? "Mic" : "Cam"}>
+      <Button
+        color={enabled ? "slate" : "red"}
+        icon={
+          track === "audio" ? (
+            <MicrophoneIcon width={24} className={iconClassName} />
+          ) : (
+            <VideoCameraIcon width={24} className={iconClassName} />
+          )
+        }
+        onClick={handleToggle}
+        square
+      />
+    </Control>
+  );
+}
+
+export function AudioControl() {
+  return TrackControl("audio");
+}
+
+export function VideoControl() {
+  return TrackControl("video");
+}
+
+export default function Controls() {
+  const router = useRouter();
 
   const handleLeave = React.useCallback(() => {
     router.push(
@@ -53,77 +119,10 @@ export default function Controls() {
     );
   }, [router]);
 
-  const handleToggleAudio = React.useCallback(() => {
-    peers.forEach((peer) => {
-      const channel = rtcDataChannelMap.get(peer.sid);
-
-      if (channel !== undefined) {
-        sendMessage(channel, {
-          type: "peer-state",
-          name: local.name,
-          audioEnabled: !audioEnabled,
-          videoEnabled,
-        });
-      }
-    });
-
-    const audioTracks = stream?.getAudioTracks();
-
-    if (audioTracks !== undefined && audioTracks.length > 0) {
-      audioTracks[0].enabled = !audioEnabled;
-    }
-
-    setLocal(localActions.setAudioVideoEnabled(!audioEnabled, videoEnabled));
-  }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
-
-  const handleToggleVideo = React.useCallback(() => {
-    peers.forEach((peer) => {
-      const channel = rtcDataChannelMap.get(peer.sid);
-
-      if (channel !== undefined) {
-        sendMessage(channel, {
-          type: "peer-state",
-          name: local.name,
-          audioEnabled,
-          videoEnabled: !videoEnabled,
-        });
-      }
-    });
-
-    const videoTracks = stream?.getVideoTracks();
-
-    if (videoTracks !== undefined && videoTracks.length > 0) {
-      videoTracks[0].enabled = !videoEnabled;
-    }
-
-    setLocal(localActions.setAudioVideoEnabled(audioEnabled, !videoEnabled));
-  }, [audioEnabled, local.name, peers, setLocal, stream, videoEnabled]);
-
-  const videoIconClassName = classNames("absolute", {
-    "text-slate-800": !videoEnabled,
-  });
-  const audioIconClassName = classNames("absolute", {
-    "text-slate-800": !audioEnabled,
-  });
-
   return (
     <div className="flex items-center justify-center m-2 sm:m-4 space-x-8">
-      <Control disabled={!audioEnabled} text="Mic">
-        <Button
-          color={audioEnabled ? "slate" : "red"}
-          icon={<MicrophoneIcon width={24} className={audioIconClassName} />}
-          onClick={handleToggleAudio}
-          square
-        />
-      </Control>
-      <Control disabled={!videoEnabled} text="Cam">
-        <Button
-          color={videoEnabled ? "slate" : "red"}
-          icon={<VideoCameraIcon width={24} className={videoIconClassName} />}
-          onClick={handleToggleVideo}
-          square
-        />
-      </Control>
+      <AudioControl />
+      <VideoControl />
       <Control text="Leave">
         <Button
           color="slate"
