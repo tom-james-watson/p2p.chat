@@ -8,5 +8,5 @@ p2p.chat uses WebRTC to power all video and data communication between peers. Pe
 
 ## Packages:
 
-- [@p2p.chat/www](./www): The web app accessible at https://p2p.chat
+- [@p2p.chat/www](./www): The web app.
 - [@p2p.chat/signalling](./signalling): The signalling server that powers peer discovery.
