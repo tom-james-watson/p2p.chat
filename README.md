@@ -1,5 +1,8 @@
 # p2p.chat
 
+> [!IMPORTANT]
+> Archived due to not being actively maintained. I do not currently have the bandwidth to work on this.
+
 p2p.chat is a peer-to-peer video conferencing application. Think of it as an free and open source Zoom alternative.
 
 ## Architecture
