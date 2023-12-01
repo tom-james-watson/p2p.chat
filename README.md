@@ -1,4 +1,4 @@
-# [p2p.chat](https://p2p.chat)
+# p2p.chat
 
 p2p.chat is a peer-to-peer video conferencing application. Think of it as an free and open source Zoom alternative.
 
